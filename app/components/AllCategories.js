@@ -3,6 +3,15 @@
 import React from 'react';
 import Product from './Product';
 import Category from './Category';
+import Bakery from '../images/bakeryFoodAndPastries.jpg'
+import Beverages from '../images/beverages.jpg';
+import Rice from '../images/RiceGrainsNoodles.jpg';
+import Sauces from '../images/Sauces.jpg'
+import SideDishes from '../images/sideDishes.jpg';
+import Desserts from '../images/Desserts.jpg';
+import MainCourses from '../images/maincourses.jpg';
+import Meat from '../images/meatAndSeaFood.jpg';
+import RecycleProduct from '../images/recycleProduct.jpg';
 
 const AllCategories = () => {
     return(
@@ -14,18 +23,17 @@ const AllCategories = () => {
 
                 <div className="flex items-center justify-center" >
                     <div className=" grid grid-cols-6 w-[95%] gap-[5px] pt-[15px] pb-[45px]">
-                        <Category />
-                        <Category />
-                        <Category />
-                        <Category />
-                        <Category />
-                        <Category />
-                        <Category />
-                        <Category />
-                        <Category />
-                        <Category />
-                        <Category />
-                        <Category />
+                        <Category title="Meals & Main Courses" image={MainCourses} />
+                        <Category title="Baked Goods & Pastries" image={Bakery} />
+                        <Category title="Appetizers & Side Dishes" image={Desserts} />
+                        <Category title="Meat & Seafood" image={Meat}  />
+                        <Category title="Dairy Products & Desserts" image={Desserts} />
+                        <Category title="Rice, Grains & Noodles" image={Rice} />
+                        <Category title="Beverages" image={Beverages}/>
+                        <Category title="Fruits & Vegetables" image={SideDishes} />
+                        <Category title="Sauces, Condiments & Seasonings" image={Sauces} />
+                        <Category title="Recyclable & Organic Food Waste" image={RecycleProduct}/>
+                 
                         
                     </div>
                 </div>
