@@ -14,9 +14,9 @@ export default function Home() {
       <Hero />
       Company Page
       <AllCategories />
-      <TopSellers />
+      {/*  <TopSellers />
       <PopularProducts />
-      <YouMightLike />
+      <YouMightLike /> */}
       <Max />
       <Footer />
     </div>

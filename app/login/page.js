@@ -80,7 +80,7 @@ const Login = () => {
                 Password
               </label>
               <input
-                type="text"
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className=" ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none"
