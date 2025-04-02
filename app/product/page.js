@@ -121,13 +121,15 @@ const ProductPage = () => {
                 }
             })
 
-            console.log(response.data)
+            
             if(response.data.success) {
                 console.log("Product added to cart")
+                
             }
             else {
                 console.log("Error adding product to cart")
             }
+            window.location.reload()
 
         } catch(err) {
             console.error("Error adding product to cart:", err)
