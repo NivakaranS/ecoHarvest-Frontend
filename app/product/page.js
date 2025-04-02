@@ -1,3 +1,4 @@
+'use client'
 import Footer from "../components/Footer"
 import Navigation from "../components/Navigation"
 
@@ -7,23 +8,152 @@ import Star from '../images/log.png'
 import { ST } from "next/dist/shared/lib/utils"
 import Max from "../components/Max";
 import Product from "../components/Product"
+import { useSearchParams } from "next/navigation";
+import { useState, useEffect, use } from "react"
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 
 const ProductPage = () => {
+    const searchParms = useSearchParams();
+    const productId = searchParms.get('productId') || '';
+    const [quantity, setQuantity] = useState(1)
+    const [cart, setCart] = useState([]);
+
+    
+    
+    const [id, setId] = useState('');
+  const [role, setRole] = useState('');
+  const [userLoggedIn, setUserLoggedIn] = useState(false);
+  const [productDetails, setProductDetails] = useState([])
+  const [product, setProduct] = useState([])
+  
+
+  const router = useRouter();
+
+
+    useEffect(() => {
+        const fetchProductDetails = async() => {
+            try {
+                const response = await axios.get(`http://localhost:8000/products/${productId}`)
+            
+                
+                setProductDetails(response.data)
+                
+            } catch(err) {
+                console.error("Error fetching product details:", err)
+            }
+        }
+
+        fetchProductDetails()
+    }, [])
+
+  
+    useEffect(() => {
+        const fetchCookies = async () => {
+          try {
+            const response = await axios.get("http://localhost:8000/check-cookie/", {
+              withCredentials: true,
+    
+            });
+            
+            console.log(response.data);
+            setId(response.data.id);
+            setRole(response.data.role);
+    
+            if(response.data.role === 'Customer') {
+              setUserLoggedIn(true)
+              try {
+                const response2 = await axios.get(`http://localhost:8000/cart/${response.data.id}`);
+            setCart(response2.data.cart);
+            setProduct(response2.data.products);
+            console.log("Product items fetched successfully:", response2.data.products);
+            console.log("Cart items fetched successfully:", response2.data.cart);
+    
+              } catch(errr) {
+                console.error("Error fetching cart items:", errr);
+              }
+              
+    
+            }
+            else if(response.data.role === 'Vendor') {
+              
+              router.push('/vendor');
+            }
+            else if(response.data.role === 'Admin') {
+    
+              router.push('/admin');
+            }
+    
+          } catch (error) {
+            console.error("Error fetching cookies:", error);
+          }
+        }
+    
+        fetchCookies();
+      }, [])
+
+    const handleIncreaseQuantity = () => {
+        setQuantity(prev => prev+1)
+    }
+
+    const handleDecreaseQuantity = () => {
+        if(quantity > 1) {
+            setQuantity(prev => prev -1)
+        }
+    }
+
+    const handleAddToCart = async () => {
+        try {
+            if (!userLoggedIn) {
+                router.push('/login')
+                return
+            }
+
+            const response = await axios.post("http://localhost:8000/cart/", {
+                productId: productId,
+                userId: id,
+                quantity: quantity
+            }, {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+
+            console.log(response.data)
+            if(response.data.success) {
+                console.log("Product added to cart")
+            }
+            else {
+                console.log("Error adding product to cart")
+            }
+
+        } catch(err) {
+            console.error("Error adding product to cart:", err)
+        }
+    }
+
+    const handleBuyNow = async () => {
+        handleAddToCart()
+        router.push('/cart')
+    }
+
     return (
         <div>
-            <Navigation/>
+            <Navigation productsDetail={product} cart={cart} id={id} userLoggedIn={userLoggedIn}/>
             <div className="text-black  bg-[#F5F5F5] w-[100%] flex flex-col space-y-[10px] justify-center items-center ">
                 <div className="bg-gradient-to-b pt-[16vh] flex flex-col items-center justify-center   from-gray-400 to-[#F5F5F5] h-[100%] w-[100%] ">
-                    
-                    <div className="w-[94vw]   flex flex-row justify-center items-center rounded-[15px] overflow-hidden  ">
+                    {
+                        productDetails.map((product, index) => (
+                    <div key={index} className="w-[94vw]   flex flex-row justify-center items-center rounded-[15px] overflow-hidden  ">
                         <div className=" select-none w-[38.2%] ml-[10px] border-[0.5px] border-gray-500 rounded-[10px] bg-[#F5F5F5] h-[80vh] ">
                             <div className="leading-[25px]  py-[20px] px-[25px]">
-                                <p className="leading-[32px] text-[28px] w-[80%]">Anchor Low Fat Yoghurt Drink - 180 ml</p>
+                                <p className="leading-[32px] text-[28px] w-[80%]">{product.name}</p>
                                 
                                 <div className="flex relative flex-row items-center justify-between">
                                     <div>
-                                        <p className=" text-[20px] ml-[10px] text-orange-500">Mango Passion</p>
+                                        <p className=" text-[20px] ml-[10px] text-orange-500">{product.subtitle}</p>
                                         <div className="flex flex-row items-center  space-x-[3px]">
                                             <Image alt="" src={Star} height={14}/>
                                             <Image alt="" src={Star} height={14}/>
@@ -44,12 +174,12 @@ const ProductPage = () => {
 
                                 <div className="flex flex-row items-center justify-between">
                                     <div className="mt-[20px]">
-                                        <p className="text-[35px] mt-[5px]">Rs. 500</p>
-                                        <p className="text-[15px] pl-[5px] text-gray-600"><s>MRP: Rs. 850</s></p>
+                                        <p className="text-[35px] mt-[5px]">Rs. {product.unitPrice}</p>
+                                        <p className="text-[15px] pl-[5px] text-gray-600"><s>MRP: Rs. {product.MRP}</s></p>
                                     </div>
                                     <div className="flex flex-col items-center justify-center leading-[20px]">
                                         <p>Heart</p>
-                                        <p className="text-green-800 text-[17px]">In Stock</p>
+                                        <p className="text-green-800 text-[17px]">{product.status}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-center my-[10px]">
@@ -61,13 +191,13 @@ const ProductPage = () => {
                                        
                                             
                                             <div className="bg-white ring-[1px] ring-gray-400 h-[30px] mt-[10px] ml-[10px] w-[90px] rounded-[5px] flex flex-row items-center justify-center">
-                                                <div className="px-[10px] cursor-pointer h-[100%] flex items-center justify-center">
+                                                <div onClick={handleDecreaseQuantity} className="px-[10px] cursor-pointer h-[100%] flex items-center justify-center">
                                                     <div className="bg-black h-[1px] w-[10px]"></div>
                                                 </div>
                                                 <div className="w-[100%] flex items-center justify-center">
-                                                    <input className="w-[100%] text-[20px] text-center focus:outline-none"/>
+                                                    <input  value={quantity} onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}  className="w-[100%] text-[20px] text-center focus:outline-none"/>
                                                 </div>
-                                                <div className="px-[10px] cursor-pointer">
+                                                <div onClick={handleIncreaseQuantity} className="px-[10px] cursor-pointer">
                                                     <p className="text-[20px]">+</p>
                                                 </div>
                                             </div>
@@ -88,10 +218,10 @@ const ProductPage = () => {
                                 </div>
                                 
                                 <div className="flex flex-row space-x-[8px] flex items-center justify-center mt-[10px]">
-                                    <div className="w-[50%] bg-[#FDAA1C] py-[5px] cursor-pointer rounded flex items-center justify-center">
+                                    <div onClick={handleAddToCart} className="w-[50%] bg-[#FDAA1C] py-[5px] cursor-pointer rounded flex items-center justify-center">
                                         <p>Add to Cart</p>
                                     </div>
-                                    <div className="w-[50%] cursor-pointer bg-[#101010] text-white flex py-[5px]  rounded items-center justify-center ">
+                                    <div onClick={handleBuyNow} className="w-[50%] cursor-pointer bg-[#101010] text-white flex py-[5px]  rounded items-center justify-center ">
                                         <p>Buy now</p>
                                     </div>
                                 </div>
@@ -104,10 +234,7 @@ const ProductPage = () => {
                                 
 
                                 <div className="absolute text-black flex flex-col items-center  right-[100px] ">
-                                <p>VR</p>
-                                    <div className="rounded-[7px] h-[60px] bg-white ring-[0.5px] ring-gray-500 w-[60px]">
-                                    
-                                    </div>
+                             
                                 </div>
                             </div>
 
@@ -134,6 +261,7 @@ const ProductPage = () => {
                         </div>
                         
                     </div>
+                ))}
                     
                 </div>
 
@@ -237,12 +365,12 @@ const ProductPage = () => {
                         <p className="text-[25px]">Customers Also Bought</p>
                         <div className="flex items-center justify-center" >
                         <div className=" grid grid-cols-6 w-[95%] gap-[5px] pt-[15px] pb-[45px]">
+                            {/* <Product />
                             <Product />
                             <Product />
                             <Product />
                             <Product />
-                            <Product />
-                            <Product />
+                            <Product /> */}
                             
                         
                         </div>
@@ -253,12 +381,12 @@ const ProductPage = () => {
                         <p className="text-[25px]">Products Related to This Product</p>
                         <div className="flex items-center justify-center" >
                         <div className=" grid grid-cols-6 w-[95%] gap-[5px] pt-[15px] pb-[45px]">
+                            {/* <Product />
                             <Product />
                             <Product />
                             <Product />
                             <Product />
-                            <Product />
-                            <Product />
+                            <Product /> */}
                             
                         
                         </div>

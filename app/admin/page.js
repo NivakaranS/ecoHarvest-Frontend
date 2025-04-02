@@ -19,7 +19,10 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const [navClick, setNavClick] = useState("User Management");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const Router = useRouter()
+  const [role, setRole] = useState('');
+  const [id, setId] = useState('');
+  
+  const router = useRouter()
 
   // useEffect(() => {
   //   const checkSessionCookie = async () => {
@@ -35,11 +38,46 @@ export default function Home() {
   //       }
   //   };
 
-  //   checkSessionCookie();
-    
-    
+  //   checkSessionCookie(); 
 
 // }, []);
+
+  useEffect(() => {
+    const fetchCookies = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/check-cookie/", {
+          withCredentials: true,
+
+        });
+        
+        console.log(response.data);
+        setId(response.data.id);
+        setRole(response.data.role);
+
+        if(response.data.role === 'Customer') {
+          router.push('/')
+        }
+        else if(response.data.role === 'Vendor') {
+          
+          router.push('/vendor');
+        }
+        else if(response.data.role === 'Admin') {
+          setIsLoggedIn(true);
+          
+        }
+        else {
+          router.push('/login')
+        }
+
+      } catch (error) {
+        console.error("Error fetching cookies:", error);
+        router.push('/login')
+      }
+    }
+
+    fetchCookies();
+  }, [])
+
 
   const handleNavClick = (e) => {
     setNavClick((e.target .innerText));
@@ -50,7 +88,7 @@ export default function Home() {
     <div className="flex flex-row overflow-hidden">
       <Navigation navClick={navClick} handleNavClick={handleNavClick} />
       <div className="w-[83vw] h-[100vh]">
-        <TopNavigation />
+        <TopNavigation id={id} isLoggedIn={isLoggedIn} />
         {navClick === "Rooms" ? 
         <Rooms /> : (
         navClick === "Restuarant" ?

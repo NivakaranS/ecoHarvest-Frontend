@@ -3,12 +3,16 @@ import React from "react"
 import Image from "next/image"
 import Profile from '../images/profile5.png'
 import Bell from '../images/bell.png'
+import LogoutButton from "../../components/Logout"
 
-const TopNavigation = () => {
+const TopNavigation = ({id, isLoggedIn}) => {
+    
+
     return(
         <div >
             <div className="w-full text-black h-[10vh] flex items-center justify-end px-[30px] bg-white ">
-                <div className="bg-gray-100  px-[10px] rounded-[50px] flex  flex-row">
+                {!isLoggedIn 
+                ? <div className="bg-gray-100  px-[10px] rounded-[50px] flex  flex-row">
                     
                     <div className="my-[5px] bg-gray-300 cursor-pointer flex items-center justify-center rounded-full w-[36px]">
                         <Image alt="" src={Bell} height={20}/>
@@ -21,6 +25,7 @@ const TopNavigation = () => {
                         </div>
                     </div>
                 </div>
+                : <LogoutButton/>}
             </div>
         </div>
     )

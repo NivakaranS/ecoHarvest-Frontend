@@ -1,5 +1,5 @@
 
-
+'use client'
 import React from 'react';
 import Product from './Product';
 import Category from './Category';
@@ -12,8 +12,32 @@ import Desserts from '../images/Desserts.jpg';
 import MainCourses from '../images/maincourses.jpg';
 import Meat from '../images/meatAndSeaFood.jpg';
 import RecycleProduct from '../images/recycleProduct.jpg';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const AllCategories = () => {
+    const [productCategories, setProductCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get("http://localhost:8000/productcategories/" );
+
+                
+                setProductCategories(response.data);
+                
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCategories();
+    })
+
+
     return(
         <div className="text-black  bg-[#F5F5F5] flex items-center justify-center">
             <div className="w-[94vw] h-[100%]">
@@ -23,17 +47,11 @@ const AllCategories = () => {
 
                 <div className="flex items-center justify-center" >
                     <div className=" grid grid-cols-6 w-[95%] gap-[5px] pt-[15px] pb-[45px]">
-                        <Category title="Meals & Main Courses" image={MainCourses} />
-                        <Category title="Baked Goods & Pastries" image={Bakery} />
-                        <Category title="Appetizers & Side Dishes" image={Desserts} />
-                        <Category title="Meat & Seafood" image={Meat}  />
-                        <Category title="Dairy Products & Desserts" image={Desserts} />
-                        <Category title="Rice, Grains & Noodles" image={Rice} />
-                        <Category title="Beverages" image={Beverages}/>
-                        <Category title="Fruits & Vegetables" image={SideDishes} />
-                        <Category title="Sauces, Condiments & Seasonings" image={Sauces} />
-                        <Category title="Recyclable & Organic Food Waste" image={RecycleProduct}/>
-                 
+                         
+                         {productCategories.map((category) => (
+                            <Category key={category._id} title={category.name} id={category._id} image={category.imageUrl} />
+                         ))}
+                        
                         
                     </div>
                 </div>
