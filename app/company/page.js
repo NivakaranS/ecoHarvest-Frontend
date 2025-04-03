@@ -2,6 +2,7 @@ import AllCategories from "../components/AllCategories";
 import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import Max from "../components/Max";
+import LogoutButton from "../components/Logout";
 import Navigation from "../components/Navigation";
 import PopularProducts from "../components/PopularProducts";
 import TopSellers from "../components/TopSellers";
