@@ -8,31 +8,25 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import LogoutButton from "./Logout";
 
-const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
+const Navigation = ({ id, productsDetail, userLoggedIn, cart }) => {
   const [productCategories, setProductCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dropdownWidth, setDropdownWidth] = useState("auto");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const textRefs = useRef([]);
   const [customerId, setCustomerId] = useState(id);
-  
- 
+
   const router = useRouter();
 
-
-  
   useEffect(() => {
     if (textRefs.current.length > 0) {
-      const maxWidth = Math.max(...textRefs.current.map(el => el.offsetWidth));
+      const maxWidth = Math.max(
+        ...textRefs.current.map((el) => el.offsetWidth)
+      );
       setDropdownWidth(`${maxWidth + 40}px`);
     }
   }, [productCategories]);
 
-
-
-
-
-  
   useEffect(() => {
     let isMounted = true;
     const fetchCategories = async () => {
@@ -51,7 +45,9 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
     };
 
     fetchCategories();
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleNavLoginClick = () => {
@@ -65,14 +61,14 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
           <div className="cursor-pointer" onClick={() => router.push("/")}>
             <p className="text-[30px]">EcoHarvest</p>
           </div>
-          
+
           <div className="flex flex-row ml-[10px] w-full">
             {/* Hidden width measurement elements */}
             <div className="absolute invisible">
               {productCategories.map((category, index) => (
                 <span
                   key={category._id}
-                  ref={el => textRefs.current[index] = el}
+                  ref={(el) => (textRefs.current[index] = el)}
                   className="whitespace-nowrap"
                 >
                   {category.name}
@@ -115,17 +111,19 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
           </div>
 
           {/* Login section */}
-          {!userLoggedIn ?
+          {!userLoggedIn ? (
             <div className="flex flex-col items-center justify-center leading-[18px] pl-[10px]">
               <p className="text-[12px]">Hello!</p>
               <div
                 className="bg-[#FDAA1C] cursor-pointer text-black px-[14px] py-[3px] text-[13px] rounded-full flex items-center justify-center"
                 onClick={handleNavLoginClick}
               >
-                <p>Login</p>
+                <p>Login 1</p>
               </div>
-            </div> 
-          : <LogoutButton/>}
+            </div>
+          ) : (
+            <LogoutButton />
+          )}
 
           {/* Cart section */}
           <div className="relative group">
@@ -137,29 +135,38 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
               height={60}
             />
             <div className="w-[50vh] bg-[#F5F5F5] hidden group-hover:block p-[10px] absolute right-[2%] top-[6.4vh] drop-shadow-sm rounded-[10px] ring-gray-800 ring-[0.5px]">
-              
-            {
-  cart && cart.products && cart.products.length > 0 ? (
-    cart.products.map((item) => (
-      productsDetail.map((product) => (
-      <div key={item._id} className="bg-white w-full flex space-x-[5px] cursor-pointer flex-row justify-between h-[75px] rounded-[5px] ring-[0.5px] ring-gray-800 items-center text-black p-[5px]">
-        <div className="h-[65px] w-[24%] overflow-hidden flex items-center justify-center bg-[#fff] rounded-[5px]">
-          <Image src={product.imageUrl} width={50} height={50} alt="product"  />
-        </div>
-        <div className="w-[76%] leading-[16px] ">
-          <p className="text-[16px] px-[5px] leading-[17px]">
-            {product.name}
-          </p>
-          <p className="text-[13px] ml-[5px]  ">{product.subtitle}</p>
-          <p className="text-[13px] px-[5px]">Quantity: {item.quantity}</p>
-        </div>
-      </div>
-      ))
-    ))
-  ) : (
-    <p>No products in the cart</p>
-  )
-}
+              {cart && cart.products && cart.products.length > 0 ? (
+                cart.products.map((item) =>
+                  productsDetail.map((product) => (
+                    <div
+                      key={item._id}
+                      className="bg-white w-full flex space-x-[5px] cursor-pointer flex-row justify-between h-[75px] rounded-[5px] ring-[0.5px] ring-gray-800 items-center text-black p-[5px]"
+                    >
+                      <div className="h-[65px] w-[24%] overflow-hidden flex items-center justify-center bg-[#fff] rounded-[5px]">
+                        <Image
+                          src={product.imageUrl}
+                          width={50}
+                          height={50}
+                          alt="product"
+                        />
+                      </div>
+                      <div className="w-[76%] leading-[16px] ">
+                        <p className="text-[16px] px-[5px] leading-[17px]">
+                          {product.name}
+                        </p>
+                        <p className="text-[13px] ml-[5px]  ">
+                          {product.subtitle}
+                        </p>
+                        <p className="text-[13px] px-[5px]">
+                          Quantity: {item.quantity}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )
+              ) : (
+                <p>No products in the cart</p>
+              )}
               <div
                 onClick={() => router.push("/cart")}
                 className="text-black bg-[#FDAA1C] w-full py-[4px] flex items-center justify-center rounded-[5px] cursor-pointer mt-[8px]"
@@ -173,19 +180,27 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
         {/* Bottom navigation */}
         <div className="flex rounded-b-[9px] flex-row items-center px-[20px] text-[14.5px] text-black space-x-[20px] w-full h-[33%] bg-[#808080]">
           <div className="flex flex-row cursor-pointer space-x-[4px] items-center">
-            <Image 
-              alt="Menu" 
-              src={Menu} 
+            <Image
+              alt="Menu"
+              src={Menu}
               width={19}
               height={15}
               className="h-[15px] w-[19px]"
             />
             <p>All Categories</p>
           </div>
-          <div className="cursor-pointer"><p>Latest deals</p></div>
-          <div className="cursor-pointer"><p>Buy again</p></div>
-          <div className="cursor-pointer"><p>Order History</p></div>
-          <div className="cursor-pointer"><p>Favourites</p></div>
+          <div className="cursor-pointer">
+            <p>Latest deals</p>
+          </div>
+          <div className="cursor-pointer">
+            <p>Buy again</p>
+          </div>
+          <div className="cursor-pointer">
+            <p>Order History</p>
+          </div>
+          <div className="cursor-pointer">
+            <p>Favourites</p>
+          </div>
         </div>
       </nav>
     </div>
