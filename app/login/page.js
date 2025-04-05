@@ -4,7 +4,6 @@ import React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { emitWarning } from "process";
 
 const Login = () => {
   const Router = useRouter();
@@ -13,6 +12,7 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
   const [registrationType, setRegistrationType] = useState("Individual");
   const [registrationPage, setRegistrationPage] = useState(1);
 
@@ -39,6 +39,7 @@ const Login = () => {
     const [comRepeatPassword, setComRepeatPassword] = useState("");
     const [comCompanyName, setComCompanyName] = useState("");
     const [comCategory, setComCategory] = useState("");
+
 
 
   const router = useRouter();
@@ -69,6 +70,8 @@ const Login = () => {
         case "Vendor":
           router.push("/vendor");
           break;
+
+
         case "Customer":
           router.push("/");
           break;
@@ -81,6 +84,7 @@ const Login = () => {
       console.error("Error in loging in:", err);
     }
   };
+
 
   const handleRegistrationTypeClick = (e) => {
     setRegistrationType(e.currentTarget.innerText);
@@ -162,6 +166,7 @@ const Login = () => {
 
   }
 
+
   return (
     <div className="w-[100%] flex items-center justify-center h-[100vh] text-black">
       <div className="w-[38.2%] h-[100%] bg-gray-200 flex ring-[0.5px] ring-gray-500 items-center justify-center">
@@ -169,6 +174,7 @@ const Login = () => {
           <p className="text-[35px] mb-[20px]">Login</p>
           <div className="flex flex-col space-y-[17px]">
             <div className="flex relative flex-col">
+
               <input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -1106,6 +1112,7 @@ const Login = () => {
         } transition-transform z-[200] ease-out duration-500 w-[61.8%] absolute  h-[100%] bg-[#101010] text-white flex ring-[0.5px] ring-gray-500 items-center justify-center`}
       >
         <p className="text-[50px]">EcoHarvest</p>
+
       </div>
     </div>
   );
