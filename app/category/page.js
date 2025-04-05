@@ -68,7 +68,7 @@ const CategoryPage = () => {
         }
 
       } catch (error) {
-        console.error("Error fetching cookies:", error);
+        setUserLoggedIn(false);
       }
     }
 
