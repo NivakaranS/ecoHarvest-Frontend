@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import LogoutButton from "./Logout";
+;
 
 const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
   const [productCategories, setProductCategories] = useState([]);
@@ -15,6 +16,7 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const textRefs = useRef([]);
   const [customerId, setCustomerId] = useState(id);
+  const [query, setQuery] = useState("");
   
  
   const router = useRouter();
@@ -58,6 +60,20 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
     router.push("/login");
   };
 
+
+  const handleSearch = async () => {
+      try {
+        if(query) {
+          router.push(`/search?query=${encodeURIComponent(query)}&category=${encodeURIComponent(selectedCategory)}`);
+        }
+        
+        
+
+      } catch (error) {
+        console.error("Error searching products:", error);
+      }
+  }
+
   return (
     <div className="flex flex-col justify-center fixed z-[100] w-full items-center">
       <nav className="bg-white w-[95vw] drop-shadow-md ring-gray-600 ring-[0.5px] mt-[5px] h-[14vh] rounded-[10px]">
@@ -90,7 +106,7 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
-                <option>All Categories</option>
+                <option value="">All Categories</option>
                 {loading ? (
                   <option disabled>Loading categories...</option>
                 ) : (
@@ -106,12 +122,16 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
             {/* Search input */}
             <div className="bg-white flex flex-row w-full items-center">
               <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 className="placeholder-gray-600 focus:outline-none w-full px-[18px] py-[5px] text-black"
                 placeholder="Search Anything"
               />
             </div>
 
-            <div className="bg-[#FDAA1C] cursor-pointer h-[5.6vh] w-[8vh] rounded-r-[5px]"></div>
+            <div onClick={handleSearch} className="bg-[#FDAA1C] flex items-center justify-center cursor-pointer h-[5.6vh] w-[8vh] rounded-r-[5px]">
+              <p>Q</p>
+            </div>
           </div>
 
           {/* Login section */}

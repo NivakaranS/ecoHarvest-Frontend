@@ -9,8 +9,12 @@ import Image from "next/image"
 import Star from '../images/log.png'
 import { useRouter } from "next/navigation"
 import axios from "axios"
+import { useSearchParams } from "next/navigation"
 
 const SearchPage = () => {
+    const searchParms = useSearchParams();
+        const categoryName = searchParms.get('category') || '';
+        const query = searchParms.get('query') || '';
 
     const [width, setWidth] = useState(0);
     const selectRef = useRef(null);
@@ -20,6 +24,9 @@ const SearchPage = () => {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
     const [cart, setCart] = useState([]);
   const router = useRouter();
+
+  const [searchProducts, setSearchProducts] = useState([]);
+  const [productCount, setProductCount] = useState(0);
 
   
   useEffect(() => {
@@ -57,7 +64,7 @@ const SearchPage = () => {
         }
 
       } catch (error) {
-        console.error("Error fetching cookies:", error);
+        setUserLoggedIn(false);
       }
     }
 
@@ -72,6 +79,35 @@ const SearchPage = () => {
             setWidth(textRef.current.offsetWidth + 20)
         }
     }
+
+    useEffect(() => {
+        const handleSearch = async () => {
+            try {
+                let categoryNe;
+                if(categoryName === 'All Categories') {
+                    categoryNe = ""
+                } else {
+                    categoryNe = categoryName
+
+
+                }
+                console.log("Searching for products with query:", query, "and category:", categoryNe);
+                const response = await axios.post("http://localhost:8000/products/search", {
+                    searchTerm: query,
+                    categoryN: categoryNe,
+                  })
+                  setSearchProducts(response.data);
+                  
+                  setProductCount(response.data.length);
+                  
+            } catch(err) {
+                console.error("Error searching products:", err);
+            }
+        }
+        
+        handleSearch()
+
+    }, [])
 
     useEffect(() => {
         updateWidth()
@@ -173,9 +209,9 @@ const SearchPage = () => {
                         </div>
                         </div>
                     </div>
-                    <div className="w-[84%] border-l-[1px]  border-gray-600  px-[20px]">
+                    <div className="w-[84%] min-h-[100vh] border-l-[1px]  border-gray-600  px-[20px]">
                         <div className="bg-gray-200 flex flex-row justify-between items-center  rounded-[5px] text-[15px] py-[5px] my-[5px] ring-[0.5px] ring-gray-600 px-[10px]">
-                            <p>1-20 of over 100 results for "Anchor Yohurt Drink"</p>
+                            <p>Found {productCount} results for "{query}"</p>
                             <div className="flex flex-row text-[13px] items-center ">
                                 <p>Sort by: </p>
                                 <div className="relative">
@@ -194,29 +230,17 @@ const SearchPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <p className="text-[30px]">Search results for "Anchor Yohurt drink"</p>
+                        <p className="text-[30px]">Search results for "{query}"</p>
                         <div className="w-[100%]  px-[5px] mx-[10px] flex items-center justify-center">
                             <div className="grid w-[100%]   gap-[5px] grid-cols-5">
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
-                                <Product/>
+                            {
+                                    searchProducts.map((product, index) => (
+                                        <div key={index}>
+                                            
+                                            <Product id={product._id} title={product.name} imageUrl={product.imageUrl} subtitle={product.subtitle} unitPrice={product.unitPrice}  />
+                                        </div>
+                                    ))
+                                }
 
                             </div>
                         </div>
