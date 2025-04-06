@@ -10,7 +10,6 @@ const Navigation = ({ handleNavClick, navClick }) => {
           <div className="pb-[15px] rounded-[px]  px-[30px]">
             <p className="text-[35px] font-bold">NEWS</p>
           </div>
-          {/* <div className="bg-black h-[1px] "></div> */}
           <div className=" h-[100%]">
             <div
               onClick={handleNavClick}

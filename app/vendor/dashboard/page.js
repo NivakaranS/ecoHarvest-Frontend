@@ -1,3 +1,5 @@
+"use client";
+
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import Card from "../components/Card";
@@ -6,8 +8,55 @@ import sales from "../images/sales.png"
 import saved from "../images/saved.png"
 import orders from "../images/orders.png"
 import reduced from "../images/reduced.png"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+
+
 
 export default function Dashboard() {
+  const router = useRouter(); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [id, setId] = useState(null);
+  const [role, setRole] = useState("");
+
+  useEffect(() => {
+      const fetchCookies = async () => {
+        try {
+          const response = await axios.get("http://localhost:8000/check-cookie/", {
+            withCredentials: true,
+  
+          });
+          
+          console.log(response.data);
+          setId(response.data.id);
+          setRole(response.data.role);
+  
+          if(response.data.role === 'Customer') {
+            router.push('/')
+          }
+          else if(response.data.role === 'Vendor') {
+            
+            router.push('/vendor/dashboard');
+          }
+          else if(response.data.role === 'Admin') {
+            setIsLoggedIn(true);
+            
+          }
+          else {
+            router.push('/login')
+          }
+  
+        } catch (error) {
+          console.error("Error fetching cookies:", error);
+          router.push('/login')
+        }
+      }
+  
+      fetchCookies();
+    }, [router])
+
+
   return (
     <div className="flex">
       <Sidebar />
