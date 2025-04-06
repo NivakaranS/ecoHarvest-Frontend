@@ -39,6 +39,7 @@ const Login = () => {
     const [comRepeatPassword, setComRepeatPassword] = useState("");
     const [comCompanyName, setComCompanyName] = useState("");
     const [comCategory, setComCategory] = useState("");
+    const [loginError, setLoginError] = useState(false);
 
 
   const router = useRouter();
@@ -77,8 +78,9 @@ const Login = () => {
           break;
       }
       console.log("Login successful");
+      setLoginError(false);
     } catch (err) {
-      console.error("Error in loging in:", err);
+      setLoginError(true);
     }
   };
 
@@ -220,10 +222,9 @@ const Login = () => {
                   Password
                 </label>
               </div>
-              <p className="text-[12px] mt-[1px] w-[100%] flex items-center hover:underline cursor-pointer justify-end">
-                Forgot password?
-              </p>
+         
             </div>
+            
           </div>
           <div className="flex flex-col items-center justify-center">
             <div
@@ -241,7 +242,12 @@ const Login = () => {
                 Register
               </span>
             </p>
+            
           </div>
+          {loginError && 
+            <div className="relative flex mt-[10px] items-center justify-center text-red-900 text-[13px] py-[3px] rounded-[3px] ring-[0.5px] ring-red-900 bg-red-400">
+              <p>Invalid Username or Password</p>
+            </div>}
         </div>
       </div>
       <div className="w-[23.6%] h-[100%] bg-gray-200 flex ring-[0.5px] ring-gray-500 items-center justify-center"></div>

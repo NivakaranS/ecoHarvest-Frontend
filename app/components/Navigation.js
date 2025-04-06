@@ -176,16 +176,26 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
       </div>
       ))
     ))
-  ) : (
-    <p>No products in the cart</p>
+  ) : ( userLoggedIn ?
+    <p className="text-black px-[20px] py-[10px]">No products in the cart</p>
+    :
+    <div className=" flex flex-col items-center justify-center"> 
+      <p className="text-black w-[90%] text-center leading-[20px]">Please login to add products to your cart</p>
+      <div
+        onClick={() => router.push("/login")}
+        className="text-black bg-[#FDAA1C] w-full py-[4px] flex items-center justify-center rounded-[5px] cursor-pointer mt-[8px]"
+      >
+        <p>Login</p>
+      </div>
+    </div>
   )
 }
-              <div
+              {userLoggedIn &&<div
                 onClick={() => router.push("/cart")}
                 className="text-black bg-[#FDAA1C] w-full py-[4px] flex items-center justify-center rounded-[5px] cursor-pointer mt-[8px]"
               >
                 <p className="select-none">View All Products</p>
-              </div>
+              </div>}
             </div>
           </div>
         </div>

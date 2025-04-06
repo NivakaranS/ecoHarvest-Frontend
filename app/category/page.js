@@ -44,17 +44,8 @@ const CategoryPage = () => {
         setRole(response.data.role);
 
         if(response.data.role === 'Customer') {
+          
           setUserLoggedIn(true)
-          try {
-            const response2 = await axios.get(`http://localhost:8000/cart/${response.data.id}`);
-            setCart(response2.data.cart);
-            setProductsDetail(response2.data.products);
-            console.log("Product items fetched successfully:", response2.data.products);
-            console.log("Cart items fetched successfully:", response2.data.cart);
-
-          } catch(errr) {
-            console.error("Error fetching cart items:", errr);
-          }
           
 
         }
@@ -74,6 +65,29 @@ const CategoryPage = () => {
 
     fetchCookies();
   }, [])
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      if(!userLoggedIn) {
+        return
+      }
+      try {
+        console.log("iddd", id)
+        const response2 = await axios.get(`http://localhost:8000/cart/${id}`);
+                    setCart(response2.data.cart);
+                    setProductsDetail(response2.data.products);
+                    console.log("Product items fetched successfully:", response2.data.products);
+                    console.log("Cart items fetched successfully:", response2.data.cart);
+
+      } catch(errr) {
+        console.log("Cart Empty")
+
+      }
+    }
+
+    fetchCart();
+
+  }, [id])
    
 
 
@@ -109,7 +123,7 @@ const CategoryPage = () => {
                 console.log(products)
                 
             } catch (error) {
-                console.error("Error fetching categories:", error);
+                setUserLoggedIn(false)
             } finally {
                 setLoading(false);
             }

@@ -1,3 +1,4 @@
+'use client';
 import Navigation from "../components/Navigation";
 import Footer from "../components/Footer";
 import Max from "../components/Max";
@@ -10,8 +11,25 @@ const CheckoutPage = () => {
   const [role, setRole] = useState('');
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [cart, setCart] = useState([]);
+  const [advertisement, setAdvertisement] = useState([]);
 
   const router = useRouter();
+
+
+  useEffect(() => {
+    const fetchAdvertisement = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/advertisement/');
+            setAdvertisement(response.data);
+        } catch (error) {
+            console.error('Error fetching advertisement:', error);
+        }
+    } 
+
+    fetchAdvertisement();
+
+}, [])
+
 
   
   useEffect(() => {
@@ -34,7 +52,7 @@ const CheckoutPage = () => {
             console.log("Cart items fetched successfully:", response2.data);
 
           } catch(errr) {
-            console.error("Error fetching cart items:", errr);
+            router.push('/');
           }
           
 
@@ -49,7 +67,7 @@ const CheckoutPage = () => {
         }
 
       } catch (error) {
-        console.error("Error fetching cookies:", error);
+        router.push('/');
       }
     }
 
@@ -70,5 +88,6 @@ const CheckoutPage = () => {
         </div>
     )
 }
+
 
 export default CheckoutPage;

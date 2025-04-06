@@ -3,7 +3,7 @@ import React from "react"
 import Image from "next/image"
 import Profile from '../images/profile5.png'
 import Bell from '../images/bell.png'
-import LogoutButton from "../../components/Logout"
+import LogoutButton from "../../components/Logout";
 
 const TopNavigation = ({id, isLoggedIn}) => {
     

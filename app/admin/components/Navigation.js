@@ -10,8 +10,8 @@ const Navigation = ({ handleNavClick, navClick }) => {
         <div>
             <div className="bg-white border-r-[1px] w-[17vw]  border-gray-400 flex flex-col justify-between text-black py-[15px]  h-[100vh]">
                 <div>
-                    <div className="pb-[15px] rounded-[px]  px-[30px]">
-                        <p className="text-[35px] font-bold">NEWS</p>
+                    <div className="pb-[15px] rounded-[px]  px-[20px]">
+                        <p className="text-[33px] font-bold">EcoHarvest</p>
                     </div>
                     {/* <div className="bg-black h-[1px] "></div> */}
                     <div className=" h-[100%]">
@@ -26,11 +26,17 @@ const Navigation = ({ handleNavClick, navClick }) => {
                                 <p>Articles Management</p>
                             </div>
                         </div>
-                        <div onClick={handleNavClick} className={`${navClick == 'Rooms' ? 'bg-gray-200' : 'hover:bg-gray-100'} cursor-pointer py-[5px]`} >
-                            <div className={`${navClick == 'News Organization' ? 'border-l-4 ' : 'ml-[14px]' }   border-gray-700 ml-[10px] py-[5px] px-[25px]`}>
-                                <p>News Organization </p>
+                        <div onClick={handleNavClick} className={`${navClick == 'Advertisements' ? 'bg-gray-200' : 'hover:bg-gray-100'} cursor-pointer py-[5px]`} >
+                            <div className={`${navClick == 'Advertisements' ? 'border-l-4 ' : 'ml-[14px]' }   border-gray-700 ml-[10px] py-[5px] px-[25px]`}>
+                                <p>Advertisements</p>
                             </div>
                         </div>
+                        <div onClick={handleNavClick} className={`${navClick == 'Orders Dashboard' ? 'bg-gray-200' : 'hover:bg-gray-100'} cursor-pointer py-[5px]`} >
+                            <div className={`${navClick == 'Orders Dashboard' ? 'border-l-4 ' : 'ml-[14px]' }   border-gray-700 ml-[10px] py-[5px] px-[25px]`}>
+                                <p>Orders Dashboard</p>
+                            </div>
+                        </div>
+
                         
                         
                         

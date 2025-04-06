@@ -14,7 +14,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 
 
-export default function Home() {
+export default function CustomerHome() {
 
   const [id, setId] = useState('');
   const [role, setRole] = useState('');
@@ -39,17 +39,8 @@ export default function Home() {
         setRole(response.data.role);
 
         if(response.data.role === 'Customer') {
+          
           setUserLoggedIn(true)
-          try {
-            const response2 = await axios.get(`http://localhost:8000/cart/${response.data.id}`);
-                        setCart(response2.data.cart);
-                        setProductsDetail(response2.data.products);
-                        console.log("Product items fetched successfully:", response2.data.products);
-                        console.log("Cart items fetched successfully:", response2.data.cart);
-
-          } catch(errr) {
-            console.error("Error fetching cart items:", errr);
-          }
           
 
         }
@@ -69,6 +60,29 @@ export default function Home() {
 
     fetchCookies();
   }, [])
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      if(!userLoggedIn) {
+        return
+      }
+      try {
+        console.log("iddd", id)
+        const response2 = await axios.get(`http://localhost:8000/cart/${id}`);
+                    setCart(response2.data.cart);
+                    setProductsDetail(response2.data.products);
+                    console.log("Product items fetched successfully:", response2.data.products);
+                    console.log("Cart items fetched successfully:", response2.data.cart);
+
+      } catch(errr) {
+        console.log("Cart Empty")
+
+      }
+    }
+
+    fetchCart();
+
+  }, [id])
 
 
   return (

@@ -25,8 +25,25 @@ const CartPage = () => {
   const [productsDetail, setProductsDetail] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [updateBtnVisible, setUpdateBtnVisible] = useState(false);
+  const [advertisement, setAdvertisement] = useState([]);
 
   const router = useRouter();
+
+
+  useEffect(() => {
+    const fetchAdvertisement = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/advertisement/');
+            setAdvertisement(response.data);
+        } catch (error) {
+            console.error('Error fetching advertisement:', error);
+        }
+    } 
+
+    fetchAdvertisement();
+
+}, [])
+
 
   useEffect(() => {
     const fetchCookies = async () => {
@@ -59,7 +76,8 @@ const CartPage = () => {
               response2.data.cart
             );
           } catch (errr) {
-            console.error("Error fetching cart items:", errr);
+            setUserLoggedIn(false);
+            router.push('/')
           }
         } else if (response.data.role === "Vendor") {
           router.push("/vendor");
@@ -67,7 +85,7 @@ const CartPage = () => {
           router.push("/admin");
         }
       } catch (error) {
-        console.error("Error fetching cookies:", error);
+        router.push("/login");
       }
     };
 
@@ -80,7 +98,8 @@ const CartPage = () => {
       const response = axios.post("http://localhost:8000/orders/checkout", {
         cart
       })
-    console.log("Checkout response:", response);
+      console.log("Checkout response:", response);
+      router.push("/checkout")
     } else {
       router.push("/login");
     }
@@ -104,18 +123,26 @@ const CartPage = () => {
 
   const handleDeleteProduct = async (cartId1, productId1) => {
     try {
-      console.log("Deleting product from cart with:", cartId1, productId1);
-      const response = await axios.post("http://localhost:8000/cart/delete/", {
-        cartId: cartId1,
-        productId: productId1,
+      const response = await axios.delete("http://localhost:8000/cart/delete/", {
+        data: { cartId: cartId1, productId: productId1 }
       });
-      console.log("Product deleted successfully:", response);
-
+  
       if (response.status === 200) {
-        window.location.reload();
+        setCart(prevCart => {
+          const newProducts = prevCart.products.filter(p => p.id !== productId1);
+          
+          if (newProducts.length === 0) {
+            router.push('/');
+          }
+          
+          return { ...prevCart, products: newProducts };
+        });
+        
+        toast.success("Product removed from cart");
       }
     } catch (err) {
-      console.error("Error deleting product from cart:", err);
+      console.error("Deletion failed:", err);
+      toast.error("Failed to remove product. Please try again.");
     }
   };
 
@@ -176,7 +203,17 @@ const CartPage = () => {
       <div className="pt-[15vh] w-[100%] flex items-center justify-center text-black">
         <div className="w-[95%] min-h-[100vh] flex flex-row ">
           <div className="w-[76.4%] pr-[20px] h-[100%]">
-            <div className="w-[100%]  h-[200px] bg-gray-300 rounded-[10px] mt-[10px] ring-[0.5px] ring-gray-800 "></div>
+            <div className="w-[100%] flex flex-row h-[200px] bg-gray-300 rounded-[10px] mt-[10px] ring-[0.5px] ring-gray-800 ">
+              <div className="w-[60%] h-[100%] flex flex-col items-center justify-center">
+                <div className="w-[80%]">
+                  <p className="text-[25px] leading-[30px]">{advertisement[0] && advertisement[0].title}</p>
+                  <p className="text-gray-600 leading-[20px] mt-[5px]">{advertisement[0] && advertisement[0].description}</p>
+                </div>
+              </div>
+              <div className="w-[40%] h-[100%] flex items-center justify-center">
+                <Image src={advertisement[0] && advertisement[0].imageUrl} width={220} height={150} alt="Advertisement" className="rounded-[10px]" />
+              </div>
+            </div>
             <p className="text-[35px] px-[20px] mt-[10px] mb-[5px] ">
               Shopping Cart
             </p>
@@ -287,8 +324,8 @@ const CartPage = () => {
             <div
               ref={fixedRef}
               className={`${
-                isFixed ? "fixed" : " hidden "
-              } py-[10px] px-[20px] rounded-[15px] ring-[0.5px] w-[30%] bg-gray-300 h-[80%] `}
+                isFixed ? "fixed w-[30%]" : " static w-[100%]  "
+              } py-[10px] px-[20px] rounded-[15px] ring-[0.5px]  bg-gray-300 h-[80%] `}
             >
               <p className="text-[20px] text-gray-700">Order Summary</p>
               <div className="h-[0.5px] w-[100%]  mt-[10px] bg-black"></div>
@@ -314,20 +351,17 @@ const CartPage = () => {
               </div>
               <div className="h-[0.5px] w-[100%] bg-black"></div>
               <div>
-                <div className="flex flex-row justify-between mt-[10px]">
-                  <p>Sub total</p>
-                  <p>Rs. 20000</p>
-                </div>
+                
                 <div className="flex flex-row justify-between text-[20px] mt-[10px]">
-                  <p>Total</p>
-                  <p>Rs. 20500</p>
+                  <p>Grand total</p>
+                  <p>Rs. {cart.totalAmount}</p>
                 </div>
               </div>
               <div className="flex flex-col space-y-[10px] mt-[20px]">
                 <div onClick={handleCheckout} className="bg-gray-500 rounded-[10px] py-[10px] cursor-pointer flex items-center justify-center ">
                   <p>Checkout</p>
                 </div>
-                <div className="bg-yellow-600 rounded-[10px] py-[10px] cursor-pointer flex items-center justify-center ">
+                <div onClick={() => router.push('/')} className="bg-yellow-600 rounded-[10px] py-[10px] cursor-pointer flex items-center justify-center ">
                   <p>Continue Shopping</p>
                 </div>
               </div>
@@ -338,6 +372,7 @@ const CartPage = () => {
       <div ref={targetRef} className="flex items-center justify-center">
         <div className="w-[95%]">{/* <YouMightLike/> */}</div>
       </div>
+     
       <Max />
       <Footer />
     </div>

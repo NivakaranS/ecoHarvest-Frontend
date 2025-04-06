@@ -15,6 +15,8 @@ import Parking from "./pages/Parking"
 import axios from "axios";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import OrdersDashboard from "./pages/OrdersDashboard";
+import Advertisements from "./pages/Advertisements";
 
 export default function Home() {
   const [navClick, setNavClick] = useState("User Management");
@@ -24,25 +26,12 @@ export default function Home() {
   
   const router = useRouter()
 
-  // useEffect(() => {
-  //   const checkSessionCookie = async () => {
-  //       try {
-  //           const response = await axios.get("https://news-app-backend-4rb1.vercel.app/auth/user", {
-  //               withCredentials: true
-  //           })
-  //           console.log(response.data);
-  //           setIsLoggedIn(response.data.isAuthenticated);
-  //       } catch(err) {
-  //           setIsLoggedIn(false);
-  //           Router.push('/login')
-  //       }
-  //   };
+  
 
-  //   checkSessionCookie(); 
 
-// }, []);
 
   useEffect(() => {
+
     const fetchCookies = async () => {
       try {
         const response = await axios.get("http://localhost:8000/check-cookie/", {
@@ -70,7 +59,6 @@ export default function Home() {
         }
 
       } catch (error) {
-        console.error("Error fetching cookies:", error);
         router.push('/login')
       }
     }
@@ -78,6 +66,9 @@ export default function Home() {
     fetchCookies();
   }, [])
 
+  if(!isLoggedIn) {
+    return null
+  }
 
   const handleNavClick = (e) => {
     setNavClick((e.target .innerText));
@@ -103,12 +94,12 @@ export default function Home() {
                 navClick === "Settings" ?
                 <Settings/>
                 : (
-                  navClick === "Analytics & Reports" ?
-                  <Message/> : (
+                  navClick === "Orders Dashboard" ?
+                  <OrdersDashboard/> : (
                     navClick === "User Management" ?
                     <Parking/> : (
-                      navClick === "News Organization" ?
-                      <Rooms/> : (
+                      navClick === "Advertisements" ?
+                      <Advertisements/> : (
                         <div>Home Content</div>
                     ))
                      
