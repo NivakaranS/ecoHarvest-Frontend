@@ -63,7 +63,7 @@ export default function Home() {
         }
 
       } catch (error) {
-        console.error("Error fetching cookies:", error);
+        setUserLoggedIn(false);
       }
     }
 
