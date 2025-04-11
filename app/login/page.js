@@ -201,7 +201,7 @@ const Login = () => {
                 <input
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  type="text"
+                  type="password"
                   className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                   placeholder=" "
                 />

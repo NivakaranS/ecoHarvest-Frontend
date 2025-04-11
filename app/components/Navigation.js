@@ -7,7 +7,8 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import LogoutButton from "./Logout";
-;
+
+import SearchIcon from '../images/search-icon.png';
 
 const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
   const [productCategories, setProductCategories] = useState([]);
@@ -130,7 +131,7 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
             </div>
 
             <div onClick={handleSearch} className="bg-[#FDAA1C] flex items-center justify-center cursor-pointer h-[5.6vh] w-[8vh] rounded-r-[5px]">
-              <p>Q</p>
+              <Image src={SearchIcon} height={20} width={20}/>
             </div>
           </div>
 

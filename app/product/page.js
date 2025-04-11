@@ -308,14 +308,7 @@ const ProductPage = () => {
                   <div className="absolute text-black flex flex-col items-center  right-[100px] "></div>
                 </div>
 
-                <div className=" flex flex-row justify-center items-center space-x-[10px]">
-                  <div className="w-[50px] cursor-pointer bg-gray-300 ring-gray-800 ring-[0.5px] rounded h-[50px]"></div>
-                  <div className="w-[50px] cursor-pointer bg-gray-300 ring-gray-800 ring-[0.5px] rounded h-[50px]"></div>
-                  <div className="w-[50px] cursor-pointer bg-gray-300 ring-gray-800 ring-[0.5px] rounded h-[50px]"></div>
-                  <div className="w-[50px] cursor-pointer bg-gray-300 ring-gray-800 ring-[0.5px] rounded h-[50px]"></div>
-                  <div className="w-[50px] cursor-pointer bg-gray-300 ring-gray-800 ring-[0.5px] rounded h-[50px]"></div>
-                  <div className="w-[50px] cursor-pointer bg-gray-300 ring-gray-800 ring-[0.5px] rounded h-[50px]"></div>
-                </div>
+               
               </div>
             </div>
           

@@ -16,16 +16,8 @@ const Navigation = ({ handleNavClick, navClick }) => {
                     {/* <div className="bg-black h-[1px] "></div> */}
                     <div className=" h-[100%]">
                         
-                        <div onClick={handleNavClick} className={`${navClick == 'Guests' ? 'bg-gray-200' : 'hover:bg-gray-100'} cursor-pointer py-[5px]`} >
-                            <div className={`${navClick == 'User Management' ? 'border-l-4 ' : 'ml-[14px]' } border-gray-700 ml-[10px] py-[5px] px-[25px]`}>
-                                <p>User Management</p>
-                            </div>
-                        </div>
-                        <div onClick={handleNavClick} className={`${navClick == 'Reservations' ? 'bg-gray-200' : 'hover:bg-gray-100'} cursor-pointer py-[5px]`} >
-                            <div className={`${navClick == 'Articles Management' ? 'border-l-4 ' : 'ml-[14px]' }   border-gray-700 ml-[10px] py-[5px] px-[25px]`}>
-                                <p>Articles Management</p>
-                            </div>
-                        </div>
+                        
+                        
                         <div onClick={handleNavClick} className={`${navClick == 'Advertisements' ? 'bg-gray-200' : 'hover:bg-gray-100'} cursor-pointer py-[5px]`} >
                             <div className={`${navClick == 'Advertisements' ? 'border-l-4 ' : 'ml-[14px]' }   border-gray-700 ml-[10px] py-[5px] px-[25px]`}>
                                 <p>Advertisements</p>
@@ -42,11 +34,7 @@ const Navigation = ({ handleNavClick, navClick }) => {
                         
                        
                         
-                        <div onClick={handleNavClick} className={`${navClick == 'Settings' ? 'bg-gray-200' : 'hover:bg-gray-100'} cursor-pointer py-[5px]`} >
-                            <div className={`${navClick == 'Settings' ? 'border-l-4 ' : 'ml-[14px]' }   border-gray-700 ml-[10px] py-[5px] px-[25px]`}>
-                                <p>Settings</p>
-                            </div>
-                        </div>
+                       
                     </div>
                 </div>
                 <div>
@@ -57,7 +45,7 @@ const Navigation = ({ handleNavClick, navClick }) => {
                             <p>Settings</p>
                         </div>
                     </div>
-                    <p className="text-[11px] text-center">Copyright &copy; Codebug.lk. All Rights Reserved.</p>
+                    
                 </div>
             </div>
         </div>
