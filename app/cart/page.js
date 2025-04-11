@@ -73,6 +73,7 @@ const CartPage = () => {
 
     fetchCookies();
   }, []);
+
   
 
   const handleCheckout = () => {
@@ -118,6 +119,7 @@ const CartPage = () => {
       console.error("Error deleting product from cart:", err);
     }
   };
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -215,6 +217,7 @@ const CartPage = () => {
                                   className="px-[10px] cursor-pointer h-[100%] flex items-center justify-center"
                                 >
                                   <div className="bg-black h-[1px] w-[10px]"></div>
+
                                 </div>
                                 <div className="w-[100%] flex items-center justify-center">
                                   <input
@@ -237,6 +240,7 @@ const CartPage = () => {
                                 >
                                   <p className="text-[20px]">+</p>
                                 </div>
+
                               </div>
                               {updateBtnVisible ? (
                                 <div
@@ -287,7 +291,9 @@ const CartPage = () => {
             <div
               ref={fixedRef}
               className={`${
-                isFixed ? "fixed" : " hidden "
+
+                isFixed ? "fixed" : " static "
+
               } py-[10px] px-[20px] rounded-[15px] ring-[0.5px] w-[30%] bg-gray-300 h-[80%] `}
             >
               <p className="text-[20px] text-gray-700">Order Summary</p>
@@ -295,7 +301,9 @@ const CartPage = () => {
               <div className="flex flex-col my-[10px]">
                 <div className="flex flex-row justify-between ">
                   <p>Sub total</p>
+
                   <p>Rs. {cart.totalAmount}</p>
+
                 </div>
                 <div className="flex flex-row justify-between ">
                   <p>Delivery Charge</p>
@@ -324,8 +332,10 @@ const CartPage = () => {
                 </div>
               </div>
               <div className="flex flex-col space-y-[10px] mt-[20px]">
+
                 <div onClick={handleCheckout} className="bg-gray-500 rounded-[10px] py-[10px] cursor-pointer flex items-center justify-center ">
                   <p>Checkout</p>
+
                 </div>
                 <div className="bg-yellow-600 rounded-[10px] py-[10px] cursor-pointer flex items-center justify-center ">
                   <p>Continue Shopping</p>
