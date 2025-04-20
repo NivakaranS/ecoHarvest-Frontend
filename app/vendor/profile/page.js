@@ -7,42 +7,15 @@ import { FiCamera } from "react-icons/fi";
 
 export default function ProfilePage() {
   const [vendor, setVendor] = useState(null);
-  const [vendorId, setVendorId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
 
-  useEffect(() => {
-    const fetchVendorId = async () => {
-      try {
-        const res = await fetch("http://localhost:8000/check-cookie", {
-          credentials: "include", 
-        });
-
-        const data = await res.json();
-        if (res.ok && data.role === "Vendor") {
-          setVendorId(data.id);
-        } else {
-          throw new Error("Not a vendor or unauthorized");
-        }
-      } catch (err) {
-        console.error("Error fetching vendor ID:", err);
-      }
-    };
-
-    fetchVendorId();
-  }, []);
+  const vendorId = "67ebdddc067a1c7f6e6eff86";
 
   useEffect(() => {
-    if (!vendorId) return;
-
     const fetchVendor = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/vendors/${vendorId}`, {
-          // headers: {
-          //   Authorization: `Bearer ${getToken()}`,
-          // },
-        });
-
+        const res = await fetch(`http://localhost:8000/vendors/${vendorId}`);
         const data = await res.json();
         setVendor(data);
       } catch (err) {
@@ -53,15 +26,7 @@ export default function ProfilePage() {
     };
 
     fetchVendor();
-  }, [vendorId]);
-
-  const getToken = () => {
-    console.log("document.cookie",document.cookie);
-    const tokenCookie = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("token="));
-    return tokenCookie ? tokenCookie.split("=")[1] : null;
-  };
+  }, []);
 
   const handleChange = (e) => {
     setVendor((prev) => ({
@@ -70,33 +35,15 @@ export default function ProfilePage() {
     }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setVendor((prev) => ({
-        ...prev,
-        profileImage: reader.result,
-      }));
-    };
-    reader.readAsDataURL(file);
-  };
-
   const handleSave = async () => {
     try {
       const res = await fetch(`http://localhost:8000/vendors/${vendorId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getToken()}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(vendor),
       });
 
       const data = await res.json();
-
       if (res.ok) {
         alert("Profile updated successfully!");
         setEditMode(false);
@@ -114,8 +61,10 @@ export default function ProfilePage() {
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
+
       <div className="flex-1 flex flex-col">
         <Navbar />
+
         <div className="flex flex-col px-8 py-6">
           <h2 className="text-2xl font-semibold">Profile Details</h2>
           <p className="text-gray-600">Manage your account information</p>
@@ -124,35 +73,20 @@ export default function ProfilePage() {
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <img
-                  src={vendor.profileImage || "/images/profile.png"}
+                  src="/images/"
                   alt="Profile"
                   className="w-20 h-20 rounded-full object-cover"
                 />
-                {editMode && (
-                  <div className="absolute bottom-0 right-0 bg-white p-1 rounded-full shadow-md cursor-pointer">
-                    <label htmlFor="profileUpload">
-                      <FiCamera className="text-yellow-500" size={18} />
-                    </label>
-                    <input
-                      type="file"
-                      id="profileUpload"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="hidden"
-                    />
-                  </div>
-                )}
+                <div className="absolute bottom-0 right-0 bg-white p-1 rounded-full shadow-md cursor-pointer">
+                  <FiCamera className="text-yellow-500" size={18} />
+                </div>
               </div>
-              <span className="text-gray-700 font-medium">
-                {vendor.businessName}
-              </span>
+              <button className="text-yellow-500 font-medium">Change Photo</button>
             </div>
 
             <div className="grid grid-cols-2 gap-6 mt-6">
               <div>
-                <label className="block text-gray-700 font-medium">
-                  Business Name
-                </label>
+                <label className="block text-gray-700 font-medium">Business Name</label>
                 <input
                   type="text"
                   name="businessName"
@@ -163,9 +97,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium">
-                  Phone Number
-                </label>
+                <label className="block text-gray-700 font-medium">Phone Number</label>
                 <input
                   type="text"
                   name="phoneNumber"
@@ -176,9 +108,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium">
-                  Email Address
-                </label>
+                <label className="block text-gray-700 font-medium">Email Address</label>
                 <input
                   type="email"
                   name="email"
@@ -189,9 +119,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium">
-                  Password
-                </label>
+                <label className="block text-gray-700 font-medium">Password</label>
                 <input
                   type="password"
                   value="********"
@@ -200,11 +128,9 @@ export default function ProfilePage() {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium">
-                  Account Status
-                </label>
+                <label className="block text-gray-700 font-medium">Account Status</label>
                 <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-md text-sm">
-                  {vendor.status || "Active"}
+                  {vendor.status}
                 </span>
               </div>
             </div>

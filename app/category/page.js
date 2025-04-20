@@ -68,7 +68,7 @@ const CategoryPage = () => {
           router.push("/admin");
         }
       } catch (error) {
-        setUserLoggedIn(false);
+        console.error("Error fetching cookies:", error);
       }
     };
 

@@ -86,7 +86,7 @@ const ProductPage = () => {
             }
     
           } catch (error) {
-            setUserLoggedIn(false)
+            console.error("Error fetching cookies:", error);
           }
         }
     
@@ -137,10 +137,6 @@ const ProductPage = () => {
     }
 
     const handleBuyNow = async () => {
-        if (!userLoggedIn) {
-            router.push('/login')
-            return
-        }
         handleAddToCart()
         router.push('/cart')
     }

@@ -1,0 +1,1 @@
+export const stripePublishableKey = 'pk_test_51QEPgtHfjG6ABZDpgTstp0n5BBk9dEF6CTzWEK7VrFWKQ7DRjaemOcNwibkkszbejm4Alqm4UggwETBo76gLtEPa00ejYZRK2n';
