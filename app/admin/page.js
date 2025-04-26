@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -16,25 +16,28 @@ import UserManagement from "./pages/UserManagement";
 export default function AdminDashboard() {
   const [navClick, setNavClick] = useState("Inventory");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [role, setRole] = useState('');
-  const [id, setId] = useState('');
+  const [role, setRole] = useState("");
+  const [id, setId] = useState("");
   const router = useRouter();
 
   useEffect(() => {
     const fetchCookies = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/check-cookie/", {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          "http://localhost:8000/check-cookie/",
+          {
+            withCredentials: true,
+          }
+        );
 
         setId(response.data.id);
         setRole(response.data.role);
 
-        if (response.data.role === 'Admin') setIsLoggedIn(true);
-        else router.push('/');
+        if (response.data.role === "Admin") setIsLoggedIn(true);
+        else router.push("/");
       } catch (error) {
         console.error("Error fetching cookies:", error);
-        router.push('/login');
+        router.push("/login");
       }
     };
 
@@ -47,23 +50,27 @@ export default function AdminDashboard() {
 
   const renderPage = () => {
     switch (navClick) {
-      case "Inventory": return <Inventory />;
-      case "Discount": return <Discount />;
-      case "Payment": return <Payment />;
-      case "Reports": return <Reports />;
-      case "User Management": return <UserManagement />;
-      default: return <div className="p-6">Welcome Admin</div>;
+      case "Inventory":
+        return <Inventory />;
+      case "Discount":
+        return <Discount />;
+      case "Payment":
+        return <Payment />;
+      case "Reports":
+        return <Reports />;
+      case "User Management":
+        return <UserManagement />;
+      default:
+        return <div className="p-6">Welcome Admin</div>;
     }
   };
 
   return (
     <div className="flex flex-row overflow-hidden">
       <Navigation navClick={navClick} handleNavClick={handleNavClick} />
-      <div className="w-[83vw] h-[100vh] bg-gray-50">
+      <div className="w-[83vw] min-h-screen h-[100vh] bg-gray-50 overflow-auto">
         <TopNavigation id={id} isLoggedIn={isLoggedIn} />
-        <div className="p-6">
-          {renderPage()}
-        </div>
+        <div className="p-6">{renderPage()}</div>
       </div>
     </div>
   );
