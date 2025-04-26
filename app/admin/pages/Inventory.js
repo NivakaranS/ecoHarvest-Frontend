@@ -1,3 +1,5 @@
+import InventoryPage from "./inventory/page";
+
 export default function Inventory() {
-  return <div>Inventory Page</div>;
+  return <InventoryPage/>;
 }
