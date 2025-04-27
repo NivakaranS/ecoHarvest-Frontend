@@ -1,5 +1,8 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 export default function Discount() {
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [selectedProductId, setSelectedProductId] = useState("");
@@ -8,6 +11,45 @@ export default function Discount() {
   const [discounts, setDiscounts] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editId, setEditId] = useState(null);
+  const generatePDF = () => {
+    const doc = new jsPDF();
+
+    const tableColumn = [
+      "Product Name",
+      "Category",
+      "Original Price",
+      "Discount (%)",
+      "Current Price",
+      "Status",
+    ];
+
+    const tableRows = discounts.map((item) => {
+      const originalPrice = item.productId.unitPrice;
+      const discountAmount = (originalPrice * item.percentage) / 100;
+      const currentPrice = originalPrice - discountAmount;
+
+      return [
+        item.productId.name,
+        item.productId.category,
+        `$${originalPrice}`,
+        `${item.percentage}%`,
+        `$${currentPrice.toFixed(2)}`,
+        item.status ? "Available" : "Not Available",
+      ];
+    });
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [253, 170, 28] }, // Orange color for header (optional)
+      startY: 20,
+    });
+
+    doc.setFontSize(18);
+    doc.text("Discounts Report", 14, 15);
+
+    doc.save("discounts-report.pdf");
+  };
 
   useEffect(() => {
     const getRecycleProducts = async () => {
@@ -186,6 +228,15 @@ export default function Discount() {
       </div>
       <div>
         <p className="text-[30px] text-center mb-8">Available discounts</p>
+        <div className="flex  px-[20px] pb-[10px] mb-8 mt-10 text-[20px]">
+          <p
+            onClick={generatePDF}
+            className="bg-gray-500 cursor-pointer w-fit px-[15px] py-[5px] rounded mb-8 mt-10 text-right ml-auto text-white"
+          >
+            Generate Report
+          </p>
+        </div>
+
         <table className="table-auto border-collapse border border-gray-300 w-full">
           <thead>
             <tr>
