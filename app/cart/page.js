@@ -130,7 +130,7 @@ const CartPage = () => {
     }));
     setUpdateBtnVisible(true);
   };
-
+  
   const handleDecreaseQuantity = (itemId) => {
     setCart((prevCart) => ({
       ...prevCart,
