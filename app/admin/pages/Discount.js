@@ -30,6 +30,10 @@ export default function Discount() {
     if (selectedColumns.discount) tableColumn.push("Discount (%)");
     if (selectedColumns.currentPrice) tableColumn.push("Current Price");
     if (selectedColumns.status) tableColumn.push("Status");
+    if (tableColumn.length < 2) {
+      alert("Please select at least two columns to generate the PDF report.");
+      return;
+    }
 
     const tableRows = discounts.map((item) => {
       const row = [];
@@ -90,8 +94,8 @@ export default function Discount() {
       const errors = [];
 
       if (!selectedProductId) errors.push("Please select a product.");
-      if (discountPercentage < 0 || discountPercentage > 100)
-        errors.push("Discount percentage must be between 0 and 100.");
+      if (discountPercentage <= 0 || discountPercentage > 100)
+        errors.push("Discount percentage must be between 1 and 100.");
       if (status !== true && status !== false)
         errors.push("Please select a status.");
       // if (!isConfirmed) errors.push("Please confirm the information provided.");
