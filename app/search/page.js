@@ -28,12 +28,7 @@ const SearchPage = () => {
   const [searchProducts, setSearchProducts] = useState([]);
   const [productCount, setProductCount] = useState(0);
 
-  const [numberOfCartItems, setNumberOfCartItems] = useState(0);
   
-    const [productsDetail, setProductsDetail] = useState([]);
-    const [isLoading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    
   useEffect(() => {
     const fetchCookies = async () => {
       try {
@@ -87,66 +82,40 @@ const SearchPage = () => {
 
     useEffect(() => {
         const handleSearch = async () => {
-          try {
-            setLoading(true);
-            const categoryNe = categoryName === 'All Categories' ? '' : categoryName;
-            
-            console.log("Searching for products with query:", query, "and category:", categoryNe);
-            const response = await axios.post("http://localhost:8000/products/search", {
-              searchTerm: query,
-              categoryN: categoryNe,
-            });
-            
-            setSearchProducts(response.data);
-            setProductCount(response.data.length);
-            setError(null);
-          } catch(err) {
-            console.error("Error searching products:", err);
-            setError("Failed to load products");
-            setSearchProducts([]);
-            setProductCount(0);
-          } finally {
-            setLoading(false);
-          }
+            try {
+                let categoryNe;
+                if(categoryName === 'All Categories') {
+                    categoryNe = ""
+                } else {
+                    categoryNe = categoryName
+
+
+                }
+                console.log("Searching for products with query:", query, "and category:", categoryNe);
+                const response = await axios.post("http://localhost:8000/products/search", {
+                    searchTerm: query,
+                    categoryN: categoryNe,
+                  })
+                  setSearchProducts(response.data);
+                  
+                  setProductCount(response.data.length);
+                  
+            } catch(err) {
+                console.error("Error searching products:", err);
+            }
         }
-      
         
-        const debounceTimer = setTimeout(handleSearch, 300);
-        
-        return () => clearTimeout(debounceTimer);
-      }, [query, categoryName]);
+        handleSearch()
+
+    }, [])
 
     useEffect(() => {
         updateWidth()
     }, []) 
 
-    useEffect(() => {
-        const fetchCart = async () => {
-          if(!userLoggedIn) {
-            return
-          }
-          try {
-            console.log("iddd", id)
-            const response2 = await axios.get(`http://localhost:8000/cart/${id}`);
-                        setCart(response2.data.cart);
-                        setProductsDetail(response2.data.products);
-                        console.log("Product items fetched successfully:", response2.data.products);
-                        console.log("Cart items fetched successfully:", response2.data.cart);
-                        setNumberOfCartItems(response2.data.cart.products.length);
-                        console.log("Length", response2.data.cart.products.length)
-          } catch(errr) {
-            console.log("Cart Empty")
-    
-          }
-        }
-    
-        fetchCart();
-    
-      }, [id])
-
     return (
         <div>
-            <Navigation numberOfCartItems={numberOfCartItems} productsDetail={productsDetail} id={id} cart={cart} userLoggedIn={userLoggedIn} />
+            <Navigation cart={cart} id={id} userLoggedIn={userLoggedIn}/>
             <div className="pt-[15vh] w-[100%] flex items-center justify-center text-black">
                 <div className="w-[95%] h-[100%] flex flex-row py-[15px] ">
                     <div className="w-[16%]   h-[100%]">
@@ -264,25 +233,14 @@ const SearchPage = () => {
                         <p className="text-[30px]">Search results for "{query}"</p>
                         <div className="w-[100%]  px-[5px] mx-[10px] flex items-center justify-center">
                             <div className="grid w-[100%]   gap-[5px] grid-cols-5">
-                            {isLoading ? (
-                                <div>Loading products...</div>
-                                ) : searchProducts?.length > 0 ? (
-                                searchProducts.map((product) => (
-                                    <div key={product._id}>
-                                    <Product 
-                                        id={product._id}
-                                        title={product.name}
-                                        imageUrl={product.imageUrl}
-                                        subtitle={product.subtitle}
-                                        unitPrice={product.unitPrice}
-                                    />
-                                    </div>
-                                ))
-                                ) : (
-                                <div>
-                                    <p>No products found</p>
-                                </div>
-                                )}
+                            {
+                                    searchProducts.map((product, index) => (
+                                        <div key={index}>
+                                            
+                                            <Product id={product._id} title={product.name} imageUrl={product.imageUrl} subtitle={product.subtitle} unitPrice={product.unitPrice}  />
+                                        </div>
+                                    ))
+                                }
 
                             </div>
                         </div>

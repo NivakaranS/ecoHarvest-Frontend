@@ -42,6 +42,7 @@ export default function CustomerHome() {
         if(response.data.role === 'Customer') {
           
           setUserLoggedIn(true)
+
           
 
         }
@@ -55,7 +56,7 @@ export default function CustomerHome() {
         }
 
       } catch (error) {
-        setUserLoggedIn(false);
+        setUserLoggedIn(false)
       }
     }
 

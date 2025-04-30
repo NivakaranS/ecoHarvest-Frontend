@@ -5,8 +5,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
+
 import EcoHarvest from '../images/ecoHarvestLogo.png'
 import Image from "next/image";
+
 
 const Login = () => {
   const Router = useRouter();
@@ -46,6 +48,7 @@ const Login = () => {
     const [registrationError, setRegistrationError] = useState(false)
     
 
+
   const router = useRouter();
 
   const handleLoginClick = () => {
@@ -74,6 +77,7 @@ const Login = () => {
         case "Vendor":
           router.push("/vendor");
           break;
+
         case "Customer":
           router.push("/");
           break;
@@ -87,6 +91,7 @@ const Login = () => {
       setLoginError(true);
     }
   };
+
 
   const handleRegistrationTypeClick = (e) => {
     setRegistrationType(e.currentTarget.innerText);
@@ -190,7 +195,6 @@ const Login = () => {
     setRegistrationPage(2);
   }
 
-  
 
 
   return (
@@ -200,6 +204,7 @@ const Login = () => {
           <p className="text-[35px] mb-[20px]">Login</p>
           <div className="flex flex-col space-y-[17px]">
             <div className="flex relative flex-col">
+
               <input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}

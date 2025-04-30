@@ -14,10 +14,6 @@ const ProfilePage = () => {
   const [cart, setCart] = useState([]);
   const router = useRouter();
 
-  const [numberOfCartItems, setNumberOfCartItems] = useState(0);
-  const [productsDetail, setProductsDetail] = useState([]);
-  
-
   
   useEffect(() => {
     const fetchCookies = async () => {
@@ -61,33 +57,9 @@ const ProfilePage = () => {
     fetchCookies();
   }, [])
 
-  useEffect(() => {
-      const fetchCart = async () => {
-        if(!userLoggedIn) {
-          return
-        }
-        try {
-          console.log("iddd", id)
-          const response2 = await axios.get(`http://localhost:8000/cart/${id}`);
-                      setCart(response2.data.cart);
-                      setProductsDetail(response2.data.products);
-                      console.log("Product items fetched successfully:", response2.data.products);
-                      console.log("Cart items fetched successfully:", response2.data.cart);
-                      setNumberOfCartItems(response2.data.cart.products.length);
-                      console.log("Length", response2.data.cart.products.length)
-        } catch(errr) {
-          console.log("Cart Empty")
-  
-        }
-      }
-  
-      fetchCart();
-  
-    }, [id])
-
     return (
         <div>
-            <Navigation numberOfCartItems={numberOfCartItems} cart={cart} id={id} userLoggedIn={userLoggedIn}/>
+            <Navigation cart={cart} id={id} userLoggedIn={userLoggedIn}/>
             <div className="pt-[15vh] w-[100%] flex items-center justify-center text-black">
                 <div className="w-[95%] h-[100vh] ">
                     <p>This is the profile</p>
