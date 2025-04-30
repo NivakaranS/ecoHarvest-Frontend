@@ -7,15 +7,18 @@ const Navigation = ({ handleNavClick, navClick }) => {
     "Payment",
     "Reports",
     "User Management",
+    "Order Management",
+    "Advertisements"
   ];
 
   return (
     <div className="bg-white border-r-[1px] w-[17vw] border-gray-400 flex flex-col justify-between text-black py-[15px] h-[100vh]">
       <div>
         <div className="pb-[15px] px-[30px]">
-          <p className="text-[35px] font-bold">ADMIN</p>
+          <p className="text-[35px] font-bold">EcoHarvest</p>
+          <p>ADMIN</p>
         </div>
-        <div>
+
           {navItems.map((item) => (
             <div
               key={item}
@@ -31,6 +34,7 @@ const Navigation = ({ handleNavClick, navClick }) => {
               >
                 <p>{item}</p>
               </div>
+
             </div>
           ))}
         </div>
@@ -38,7 +42,7 @@ const Navigation = ({ handleNavClick, navClick }) => {
       <div>
         <div className="bg-gray-400 h-[0.5px]" />
         <p className="text-[11px] text-center mt-2">
-          Copyright &copy; Codebug.lk. All Rights Reserved.
+          Copyright &copy; EcoHarvest.lk. All Rights Reserved.
         </p>
       </div>
     </div>
