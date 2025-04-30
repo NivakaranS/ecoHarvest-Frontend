@@ -12,6 +12,7 @@ const Navigation = ({ handleNavClick, navClick }) => {
   ];
 
   return (
+    <div>
     <div className="bg-white border-r-[1px] w-[17vw] border-gray-400 flex flex-col justify-between text-black py-[15px] h-[100vh]">
       <div>
         <div className="pb-[15px] px-[30px]">

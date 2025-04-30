@@ -1,7 +1,6 @@
 
 
 import Image from "next/image"
-import Bed from '../images/aii.jpg'
 import React, {useEffect, useState} from "react"
 
 import {ReactSortable} from 'react-sortablejs';
