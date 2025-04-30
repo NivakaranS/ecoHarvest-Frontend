@@ -28,7 +28,7 @@ const Product = ({title, id, subtitle, unitPrice, imageUrl}) => {
                 <div className='flex flex-row items-end  justify-between'>
                     <p className='text-[23px] mt-[5px]'>Rs. {unitPrice}</p>
                     <div className='flex flex-row items-center  space-x-[3px] '>
-                        <Image src={Start} alt="" className='h-[15px] w-[15px]' />
+                        <Image src={Start} alt="test" className='h-[15px] w-[15px]' />
                         <p className='text-gray-700 text-[15px] '>4.5(25)</p>
                     </div>
                 </div>

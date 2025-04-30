@@ -1,3 +1,4 @@
+
 // app/inventory/page.js
 'use client';
 import { useState } from 'react';
@@ -41,4 +42,5 @@ export default function InventoryPage() {
             </div>
         </div>
     );
+
 }

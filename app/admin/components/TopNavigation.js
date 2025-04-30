@@ -1,5 +1,7 @@
 "use client";
 
+
+
 import React from "react";
 import Image from "next/image";
 import Profile from "../images/profile5.png";
@@ -12,6 +14,7 @@ const TopNavigation = ({ id, isLoggedIn }) => {
       <div className="flex items-center space-x-4">
         <div className="bg-gray-300 flex items-center justify-center rounded-full w-[36px] h-[36px]">
           <Image alt="Bell" src={Bell} height={20} />
+
         </div>
         <div className="flex items-center space-x-3">
           <Image
