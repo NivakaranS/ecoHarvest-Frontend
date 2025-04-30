@@ -1,8 +1,10 @@
 "use client";
 
 
+
 import Navigation from "./components/Navigation";
 import TopNavigation from "./components/TopNavigation";
+
 
 
 import { useState, useEffect } from "react";
@@ -10,11 +12,13 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import OrdersDashboard from "./pages/OrdersDashboard";
 import Advertisements from "./pages/Advertisements";
+
 import Inventory from "./pages/Inventory";
 import Discount from "./pages/Discount";
 import Payment from "./pages/Payment";
 import Reports from "./pages/Reports";
 import UserManagement from "./pages/UserManagement";
+
 
 
 export default function AdminDashboard() {
@@ -52,6 +56,7 @@ export default function AdminDashboard() {
     };
 
     fetchCookies();
+
   }, [])
 
   if(!isLoggedIn) {
@@ -75,10 +80,12 @@ export default function AdminDashboard() {
         return <Reports />;
       case "User Management":
         return <UserManagement />;
+
       case "Advertisements":
         return <Advertisements/> 
       case "Order Management":
           return <OrdersDashboard/>
+
       default:
         return <div className="p-6">Welcome Admin</div>;
     }

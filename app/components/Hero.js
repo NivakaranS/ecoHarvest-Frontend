@@ -3,12 +3,15 @@
 import Image from 'next/image';
 import HeroImage from '../images/teaAndCoffee2.png'
 import axios from 'axios';
+
 import { useEffect, useState } from 'react';
+
 
 const Hero = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [pdfLink, setPdfLink] = useState(null);
+
 
     const [advertisement, setAdvertisement] = useState([]);
 
@@ -51,6 +54,7 @@ const Hero = () => {
     //     }
     // }
 
+
     return (
         <div className="text-black  w-[100%] pt-[15vh] bg-gradient-to-b  from-gray-400 to-[#F5F5F5] flex items-center justify-center h-[100vh] bg-[#F5F5F5]">
            
@@ -68,6 +72,21 @@ const Hero = () => {
                         <div>
                         </div>
                     </div>
+
+                    <div>
+                    <button onClick={handleGeneratePDF} disabled={isLoading}>
+                        {isLoading ? 'Generating PDF...' : 'Generate PDF'}
+                    </button>
+                    {error && <p>{error}</p>}
+                    {pdfLink && (
+                        <a href={pdfLink} download="all_orders.pdf">
+                        Download PDF
+                        </a>
+                    )}
+                    </div>
+                </div>
+                <div>
+
                     <div>
                         <div>
                             

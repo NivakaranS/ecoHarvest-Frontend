@@ -1,8 +1,10 @@
+
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+
 export default function Discount() {
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [selectedProductId, setSelectedProductId] = useState("");
@@ -11,6 +13,7 @@ export default function Discount() {
   const [discounts, setDiscounts] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editId, setEditId] = useState(null);
+
   const [showReportModal, setShowReportModal] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState({
     productName: true,
@@ -61,6 +64,7 @@ export default function Discount() {
 
     doc.save("discounts-report.pdf");
   };
+
 
   useEffect(() => {
     const getRecycleProducts = async () => {
@@ -239,6 +243,7 @@ export default function Discount() {
       </div>
       <div>
         <p className="text-[30px] text-center mb-8">Available discounts</p>
+
         <div className="flex  px-[20px] pb-[10px] mb-8 mt-10 text-[20px]">
           <p
             onClick={() => setShowReportModal(true)}
@@ -247,6 +252,7 @@ export default function Discount() {
             Generate Report
           </p>
         </div>
+
 
         <table className="table-auto border-collapse border border-gray-300 w-full">
           <thead>
@@ -262,6 +268,7 @@ export default function Discount() {
           </thead>
           <tbody>
             {discounts.map((item) => {
+
               const originalPrice = item.productId.unitPrice;
               const discountAmount = (originalPrice * item.percentage) / 100;
               const currentPrice = originalPrice - discountAmount;
@@ -352,6 +359,7 @@ export default function Discount() {
           </div>
         </div>
       )}
+
       {showReportModal && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-[90%] md:w-[400px] shadow-lg relative">
@@ -469,6 +477,7 @@ export default function Discount() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

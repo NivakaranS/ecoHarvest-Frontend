@@ -107,6 +107,7 @@ const ProductPage = () => {
             );
             setCart(response2.data.cart);
             setProduct(response2.data.products);
+
             setNumberOfCartItems(response2.data.cart.products.length);
                     console.log("Length", response2.data.cart.products.length)
             console.log(
@@ -119,6 +120,7 @@ const ProductPage = () => {
             );
           } catch (errr) {
             console.log("User not logged in:");
+
           }
         } else if (response.data.role === "Vendor") {
           router.push("/vendor");
@@ -209,10 +211,12 @@ const ProductPage = () => {
     }
   };
 
+
   const handleBuyNow = async () => {
     if (!userLoggedIn) {
       router.push("/login");
       return;
+
     }
     handleAddToCart2();
     router.push("/cart");
