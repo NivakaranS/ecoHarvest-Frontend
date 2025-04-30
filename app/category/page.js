@@ -28,6 +28,8 @@ const CategoryPage = () => {
     const [cart, setCart] = useState();
     const [productsDetail, setProductsDetail] = useState([]);
 
+    const [numberOfCartItems, setNumberOfCartItems] = useState(0);
+
   const router = useRouter();
 
   
@@ -78,7 +80,8 @@ const CategoryPage = () => {
                     setProductsDetail(response2.data.products);
                     console.log("Product items fetched successfully:", response2.data.products);
                     console.log("Cart items fetched successfully:", response2.data.cart);
-
+                    setNumberOfCartItems(response2.data.cart.products.length);
+                    console.log("Length", response2.data.cart.products.length)
       } catch(errr) {
         console.log("Cart Empty")
 
@@ -136,10 +139,10 @@ const CategoryPage = () => {
 
     return (
         <div>
-            <Navigation productsDetail={productsDetail} cart={cart} id={id} userLoggedIn={userLoggedIn}/>
-            <div className="pt-[15vh] w-[100%] flex items-center justify-center text-black">
+            <Navigation numberOfCartItems={numberOfCartItems} productsDetail={productsDetail} cart={cart} id={id} userLoggedIn={userLoggedIn}/>
+            <div className="pt-[15vh]  w-[100%] flex items-center justify-center text-black">
                 <div className="w-[95%] h-[100%] flex flex-row py-[15px] ">
-                    <div className="w-[16%]   h-[100%]">
+                    <div className="w-[16%]  h-[100%]">
                         <div className="flex text-[15px]  flex-col leading-[20px]">
                             <div className="fixed">
                                 <p className="text-[18px] text-gray-800 ">Category</p>

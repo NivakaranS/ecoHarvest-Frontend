@@ -21,6 +21,7 @@ export default function CustomerHome() {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [cart, setCart] = useState([]);
   const [productsDetail, setProductsDetail] = useState([]);
+  const [numberOfCartItems, setNumberOfCartItems] = useState(0);
 
   const router = useRouter();
 
@@ -73,7 +74,8 @@ export default function CustomerHome() {
                     setProductsDetail(response2.data.products);
                     console.log("Product items fetched successfully:", response2.data.products);
                     console.log("Cart items fetched successfully:", response2.data.cart);
-
+                    setNumberOfCartItems(response2.data.cart.products.length);
+                    console.log("Length", response2.data.cart.products.length)
       } catch(errr) {
         console.log("Cart Empty")
 
@@ -87,7 +89,7 @@ export default function CustomerHome() {
 
   return (
     <div >
-      <Navigation productsDetail={productsDetail} id={id} cart={cart} userLoggedIn={userLoggedIn} />
+      <Navigation numberOfCartItems={numberOfCartItems} productsDetail={productsDetail} id={id} cart={cart} userLoggedIn={userLoggedIn} />
       <Hero />
       <AllCategories/>
       {/* <TopSellers/>

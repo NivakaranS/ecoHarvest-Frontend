@@ -11,25 +11,12 @@ const CheckoutPage = () => {
   const [role, setRole] = useState('');
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [cart, setCart] = useState([]);
-  const [advertisement, setAdvertisement] = useState([]);
+  const [numberOfCartItems, setNumberOfCartItems] = useState(0);
 
   const router = useRouter();
 
 
-  useEffect(() => {
-    const fetchAdvertisement = async () => {
-        try {
-            const response = await axios.get('http://localhost:8000/advertisement/');
-            setAdvertisement(response.data);
-        } catch (error) {
-            console.error('Error fetching advertisement:', error);
-        }
-    } 
-
-    fetchAdvertisement();
-
-}, [])
-
+  
 
   
   useEffect(() => {
@@ -74,9 +61,33 @@ const CheckoutPage = () => {
     fetchCookies();
   }, [])
 
+  useEffect(() => {
+    const fetchCart = async () => {
+      if(!userLoggedIn) {
+        return
+      }
+      try {
+        console.log("iddd", id)
+        const response2 = await axios.get(`http://localhost:8000/cart/${id}`);
+                    setCart(response2.data.cart);
+                    setProductsDetail(response2.data.products);
+                    console.log("Product items fetched successfully:", response2.data.products);
+                    console.log("Cart items fetched successfully:", response2.data.cart);
+                    setNumberOfCartItems(response2.data.cart.products.length);
+                    console.log("Length", response2.data.cart.products.length)
+      } catch(errr) {
+        console.log("Cart Empty")
+
+      }
+    }
+
+    fetchCart();
+
+  }, [id])
+
     return(
         <div>
-            <Navigation cart={cart} id={id} userLoggedIn={userLoggedIn}/>
+            <Navigation numberOfCartItems={numberOfCartItems} cart={cart} id={id} userLoggedIn={userLoggedIn}/>
             <div className="pt-[15vh] w-[100%] flex items-center justify-center text-black">
                 <div className="w-[95%] h-[100vh] ">
                     <p>This is the checkout</p>

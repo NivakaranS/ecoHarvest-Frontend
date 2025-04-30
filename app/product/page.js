@@ -28,6 +28,7 @@ const ProductPage = () => {
   const [reviews, setReviews] = useState([]);
   const [userReview, setUserReview] = useState('');
   const [userRating, setUserRating] = useState(0);
+  const [numberOfCartItems, setNumberOfCartItems] = useState(0);
 
   
 
@@ -106,6 +107,8 @@ const ProductPage = () => {
             );
             setCart(response2.data.cart);
             setProduct(response2.data.products);
+            setNumberOfCartItems(response2.data.cart.products.length);
+                    console.log("Length", response2.data.cart.products.length)
             console.log(
               "Product items fetched successfully:",
               response2.data.products
@@ -129,6 +132,7 @@ const ProductPage = () => {
 
     fetchCookies();
   }, []);
+
 
   const handleIncreaseQuantity = () => {
     setQuantity((prev) => prev + 1);
@@ -173,18 +177,51 @@ const ProductPage = () => {
     }
   };
 
+  const handleAddToCart2 = async () => {
+    try {
+      if (!userLoggedIn) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await axios.post(
+        "http://localhost:8000/cart/",
+        {
+          productId: productId,
+          userId: id,
+          quantity: quantity,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.success) {
+        console.log("Product added to cart");
+      } else {
+        console.log("Error adding product to cart");
+      }
+    } catch (err) {
+      console.error("Error adding product to cart:", err);
+    }
+  };
+
   const handleBuyNow = async () => {
     if (!userLoggedIn) {
       router.push("/login");
       return;
     }
-    handleAddToCart();
+    handleAddToCart2();
     router.push("/cart");
   };
 
   return (
     <div>
       <Navigation
+      numberOfCartItems={numberOfCartItems}
         productsDetail={product}
         cart={cart}
         id={id}
@@ -198,7 +235,7 @@ const ProductPage = () => {
           
             <div className="w-[94vw]   flex flex-row justify-center items-center rounded-[15px] overflow-hidden  "
             >
-              <div className=" select-none w-[38.2%] ml-[10px] border-[0.5px] border-gray-500 rounded-[10px] bg-[#F5F5F5] h-[80vh] ">
+              <div className=" select-none w-[38.2%] ml-[10px] border-[0.5px] border-gray-500 rounded-[10px] bg-[#F5F5F5] h-[70vh] mb-[40px] ">
                 <div className="leading-[25px]  py-[20px] px-[25px]">
                   <p className="leading-[32px] text-[28px] w-[80%]">
                     {product.name}
@@ -234,8 +271,8 @@ const ProductPage = () => {
                       </p>
                     </div>
                     <div className="flex flex-col items-center justify-center leading-[20px]">
-                      <p>Heart</p>
-                      <p className="text-green-800 text-[17px]">
+                      
+                      <p className="text-green-800 text-[19px]">
                         {product.status}
                       </p>
                     </div>
@@ -243,11 +280,11 @@ const ProductPage = () => {
                   <div className="flex items-center justify-center my-[10px]">
                     <div className="bg-gray-500 h-[0.5px] w-[98%]"></div>
                   </div>
-                  <div className="flex flex-row items-center justify-between">
+                  <div className="flex mx-[15px] flex-row items-center justify-between">
                     <div className="flex flex-row items-center justiify-center space-x-[10px]">
-                      <p className="text-[20px]">Quantity</p>
+                      <p className="text-[20px] ">Quantity</p>
 
-                      <div className="bg-white ring-[1px] ring-gray-400 h-[30px] mt-[10px] ml-[10px] w-[90px] rounded-[5px] flex flex-row items-center justify-center">
+                      <div className="bg-white my-[10px] ring-[1px] ring-gray-400 h-[30px] mt-[10px] ml-[10px] w-[90px] rounded-[5px] flex flex-row items-center justify-center">
                         <div
                           onClick={handleDecreaseQuantity}
                           className="px-[10px] cursor-pointer h-[100%] flex items-center justify-center"
@@ -274,27 +311,30 @@ const ProductPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="text-[15px] leading-[22px]">
-                    <div className="flex flex-row items-center justify-between">
+                  <div className="flex items-center justify-center my-[10px]">
+                    <div className="bg-gray-500 h-[0.5px] w-[98%]"></div>
+                  </div>
+                  <div className="text-[15px] mt-[0px] mx-[10px] flex flex-col space-y-[8px] leading-[22px]">
+                    <div className="flex text-[18px] flex-row items-center justify-between">
                       <p>Delivery</p>
-                      <p>Colombo-15, Sri Lanka</p>
+                      <p>Colombo, Sri Lanka</p>
                     </div>
-                    <div className="flex flex-row items-center justify-between">
+                    <div className="flex text-[18px] flex-row items-center justify-between">
                       <p>Sub Total</p>
                       <p>Rs. {quantity * product.unitPrice}</p>
                     </div>
                   </div>
 
-                  <div className="flex flex-row space-x-[8px] flex items-center justify-center mt-[10px]">
+                  <div className="flex flex-col  space-y-[8px] flex items-center justify-center mt-[15px]">
                     <div
                       onClick={handleAddToCart}
-                      className="w-[50%] bg-[#FDAA1C] py-[5px] cursor-pointer rounded flex items-center justify-center"
+                      className="w-[100%] bg-[#FDAA1C] py-[5px] cursor-pointer rounded flex items-center justify-center"
                     >
                       <p>Add to Cart</p>
                     </div>
                     <div
                       onClick={handleBuyNow}
-                      className="w-[50%] cursor-pointer bg-[#101010] text-white flex py-[5px]  rounded items-center justify-center "
+                      className="w-[100%] cursor-pointer bg-[#101010] text-white flex py-[5px]  rounded items-center justify-center "
                     >
                       <p>Buy now</p>
                     </div>

@@ -2,7 +2,7 @@
 
 const Footer = () => {
     return(
-        <div className=" bg-[#000] flex flex-col items-center text-white">
+        <div className=" bg-[#000] z-[9999] flex flex-col items-center text-white">
             <div className="w-[90%] pt-[20px] pb-[30px] ">
                 <div className="w-[30%]">
                     <p className="text-[50px]">EcoHarvest</p>

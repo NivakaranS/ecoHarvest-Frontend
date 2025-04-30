@@ -1,16 +1,28 @@
 "use client";
 
 import Image from "next/image";
-import Cart from "../images/cartLogo.png";
+import Cart from "../images/cartLogo2.png";
 import Menu from "../images/menu.png";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import LogoutButton from "./Logout";
-
+import AllNavCategories from "./AllNavCategories";
 import SearchIcon from '../images/search-icon.png';
+import mainMealsWallpaper from '../images/mainMealsWallpaper.jpg'
+import bakedFood from '../images/backedFood.jpg'
+import sideDishes from '../images/sideDishes.jpg'
+import meatSeaFood from '../images/meatAndSeaFood.jpg'
+import dairyProducts from '../images/Desserts.jpg'
+import riceAndGrains from '../images/RiceGrainsNoodles.jpg'
+import Beverages from '../images/beverages.jpg'
+import Sauces from '../images/Sauces.jpg'
+import AllNavCategory from "./ANavCategory";
+import EcoHarvest from '../images/ecoHarvestNavLogo2.png';
 
-const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
+
+
+const Navigation = ({id, productsDetail, userLoggedIn, cart, numberOfCartItems}) => {
   const [productCategories, setProductCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dropdownWidth, setDropdownWidth] = useState("auto");
@@ -18,12 +30,13 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
   const textRefs = useRef([]);
   const [customerId, setCustomerId] = useState(id);
   const [query, setQuery] = useState("");
+  const [onCategoryHover, setOnCategoryHover] = useState(false);
+  const [navCategorySelect, setNavCategorySelect] = useState('Meals & Main Courses');
   
+  const [NumCartItems, setNumCartItems] = useState(0)
  
   const router = useRouter();
 
-
-  
   useEffect(() => {
     if (textRefs.current.length > 0) {
       const maxWidth = Math.max(...textRefs.current.map(el => el.offsetWidth));
@@ -45,12 +58,14 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
         );
         if (isMounted) {
           setProductCategories(response.data);
+          
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
       } finally {
         if (isMounted) setLoading(false);
       }
+      console.log("Cart", cart)
     };
 
     fetchCategories();
@@ -80,7 +95,7 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
       <nav className="bg-white w-[95vw] drop-shadow-md ring-gray-600 ring-[0.5px] mt-[5px] h-[14vh] rounded-[10px]">
         <div className="flex px-[30px] rounded-t-[10px] space-x-[10px] text-white bg-[#0A0A0A] justify-between items-center h-[67%]">
           <div className="cursor-pointer" onClick={() => router.push("/")}>
-            <p className="text-[30px]">EcoHarvest</p>
+            <Image height={60} src={EcoHarvest}/>
           </div>
           
           <div className="flex flex-row ml-[10px] w-full">
@@ -157,6 +172,7 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
               width={60}
               height={60}
             />
+            <p className="text-[#FFCC29] absolute top-[-19.5px] font-bold right-[11px] text-[33px]">{numberOfCartItems}</p>
             <div className="w-[50vh] bg-[#F5F5F5] hidden group-hover:block p-[10px] absolute right-[2%] top-[6.4vh] drop-shadow-sm rounded-[10px] ring-gray-800 ring-[0.5px]">
               
             {
@@ -203,7 +219,7 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
 
         {/* Bottom navigation */}
         <div className="flex rounded-b-[9px] flex-row items-center px-[20px] text-[14.5px] text-black space-x-[20px] w-full h-[33%] bg-[#808080]">
-          <div className="flex flex-row cursor-pointer space-x-[4px] items-center">
+          <div onMouseEnter={() => setOnCategoryHover(true)} onMouseLeave={() => setOnCategoryHover(false)}  className="flex flex-row cursor-pointer space-x-[4px] items-center">
             <Image 
               alt="Menu" 
               src={Menu} 
@@ -218,6 +234,25 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart}) => {
           <div className="cursor-pointer"><p>Order History</p></div>
           <div className="cursor-pointer"><p>Favourites</p></div>
         </div>
+        
+        <div 
+  className={`${onCategoryHover ? 'max-h-[72vh]' : 'max-h-0'} 
+              transition-all duration-500 
+              overflow-hidden 
+              origin-top 
+              flex justify-center`}
+>
+  <div 
+    onMouseEnter={() => setOnCategoryHover(true)} 
+    onMouseLeave={() => setOnCategoryHover(false)} 
+    className="bg-white w-[93vw] overflow-hidden ring-[0.5px] text-black 
+              flex flex-row ring-gray-500 rounded-b-[20px]"
+  >
+    <div className="flex flex-col w-full overflow-hidden overflow-hidden items-center justify-center">
+      <AllNavCategories/>
+    </div>
+  </div>
+</div>
       </nav>
     </div>
   );
