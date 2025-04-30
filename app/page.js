@@ -42,7 +42,6 @@ export default function CustomerHome() {
         if(response.data.role === 'Customer') {
           
           setUserLoggedIn(true)
-
           
 
         }

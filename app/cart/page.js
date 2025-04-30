@@ -101,8 +101,10 @@ const CartPage = () => {
       const response = axios.post("http://localhost:8000/orders/checkout", {
         cart
       })
+
       console.log("Checkout response:", response);
       router.push("/checkout")
+
     } else {
       router.push("/login");
     }
@@ -174,7 +176,7 @@ const CartPage = () => {
     }));
     setUpdateBtnVisible(true);
   };
-
+  
   const handleDecreaseQuantity = (itemId) => {
     setCart((prevCart) => ({
       ...prevCart,
@@ -356,8 +358,10 @@ const CartPage = () => {
               ref={fixedRef}
               className={`${
 
+
                 isFixed ? "fixed w-[30%]" : " static w-[100%]  "
               } py-[10px] px-[20px] rounded-[15px] ring-[0.5px]  bg-gray-300 h-[80%] `}
+
 
             >
               <p className="text-[20px] text-gray-700">Order Summary</p>

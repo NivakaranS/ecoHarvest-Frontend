@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import LogoutButton from "./Logout";
+
 import AllNavCategories from "./AllNavCategories";
 import SearchIcon from '../images/search-icon.png';
 import mainMealsWallpaper from '../images/mainMealsWallpaper.jpg'
@@ -30,8 +31,10 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart, numberOfCartItems})
   const textRefs = useRef([]);
   const [customerId, setCustomerId] = useState(id);
   const [query, setQuery] = useState("");
+
   const [onCategoryHover, setOnCategoryHover] = useState(false);
   const [navCategorySelect, setNavCategorySelect] = useState('Meals & Main Courses');
+
   
   const [NumCartItems, setNumCartItems] = useState(0)
  
@@ -146,7 +149,9 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart, numberOfCartItems})
             </div>
 
             <div onClick={handleSearch} className="bg-[#FDAA1C] flex items-center justify-center cursor-pointer h-[5.6vh] w-[8vh] rounded-r-[5px]">
+
               <Image src={SearchIcon} height={20} width={20}/>
+
             </div>
           </div>
 
