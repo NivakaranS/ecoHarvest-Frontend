@@ -48,7 +48,7 @@ export default function Home() {
                         console.log("Cart items fetched successfully:", response2.data.cart);
 
           } catch(errr) {
-            console.error("Error fetching cart items:", errr);
+            setUserLoggedIn(false)
           }
           
 
@@ -63,7 +63,7 @@ export default function Home() {
         }
 
       } catch (error) {
-        console.error("Error fetching cookies:", error);
+        setUserLoggedIn(false)
       }
     }
 
