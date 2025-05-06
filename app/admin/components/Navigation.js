@@ -44,12 +44,7 @@ const Navigation = ({ handleNavClick, navClick }) => {
         </div>
       </div>
       <div>
-        <div className="bg-gray-400 h-[0.5px]" />
-        <p className="text-[11px] text-center mt-2">
-
-          Copyright &copy; EcoHarvest.lk. All Rights Reserved.
-
-        </p>
+       
       </div>
     </div>
   );

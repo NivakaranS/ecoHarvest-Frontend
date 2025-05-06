@@ -234,9 +234,8 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart, numberOfCartItems})
             />
             <p>All Categories</p>
           </div>
-          <div className="cursor-pointer"><p>Latest deals</p></div>
-          <div className="cursor-pointer"><p>Buy again</p></div>
-          <div className="cursor-pointer"><p>Order History</p></div>
+          
+          <div onClick={() => router.push('/order-history')} className="cursor-pointer"><p>Order History</p></div>
           <div className="cursor-pointer"><p>Favourites</p></div>
         </div>
         

@@ -239,7 +239,7 @@ const ProductPage = () => {
           
             <div className="w-[94vw]   flex flex-row justify-center items-center rounded-[15px] overflow-hidden  "
             >
-              <div className=" select-none w-[38.2%] ml-[10px] border-[0.5px] border-gray-500 rounded-[10px] bg-[#F5F5F5] h-[70vh] mb-[40px] ">
+              <div className=" select-none w-[38.2%] ml-[10px] border-[0.5px] border-gray-500 rounded-[10px] bg-[#F5F5F5] h-[78vh] mt-[10px] mb-[40px] ">
                 <div className="leading-[25px]  py-[20px] px-[25px]">
                   <p className="leading-[32px] text-[28px] w-[80%]">
                     {product.name}
