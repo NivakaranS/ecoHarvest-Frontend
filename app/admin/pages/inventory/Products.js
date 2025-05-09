@@ -8,6 +8,7 @@ import { generatePDF } from './pdfUtils';
 import Script from 'next/script';
 import { PrinterIcon, PlusIcon, FunnelIcon, PencilSquareIcon, TrashIcon, PaperAirplaneIcon, ChartBarIcon } from '@heroicons/react/24/solid'; 
 
+
 export default function Products() {
     const [items, setItems] = useState([]);
     const [filteredItems, setFilteredItems] = useState([]);
@@ -19,6 +20,7 @@ export default function Products() {
         status: '',
     });
     const [searchTerm, setSearchTerm] = useState('');
+
 
     const load = async () => {
         const { data } = await INVENTORY.LIST();

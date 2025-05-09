@@ -45,23 +45,6 @@ const CategoryPage = () => {
 
         if (response.data.role === "Customer") {
           setUserLoggedIn(true);
-          try {
-            const response2 = await axios.get(
-              `http://localhost:8000/cart/${response.data.id}`
-            );
-            setCart(response2.data.cart);
-            setProductsDetail(response2.data.products);
-            console.log(
-              "Product items fetched successfully:",
-              response2.data.products
-            );
-            console.log(
-              "Cart items fetched successfully:",
-              response2.data.cart
-            );
-          } catch (errr) {
-            console.error("Error fetching cart items:", errr);
-          }
         } else if (response.data.role === "Vendor") {
           router.push("/vendor");
         } else if (response.data.role === "Admin") {
@@ -74,6 +57,29 @@ const CategoryPage = () => {
 
     fetchCookies();
   }, []);
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      if (!userLoggedIn) {
+        return;
+      }
+      try {
+        console.log("iddd", id);
+        const response2 = await axios.get(`http://localhost:8000/cart/${id}`);
+        setCart(response2.data.cart);
+        setProductsDetail(response2.data.products);
+        console.log(
+          "Product items fetched successfully:",
+          response2.data.products
+        );
+        console.log("Cart items fetched successfully:", response2.data.cart);
+      } catch (errr) {
+        console.log("Cart Empty");
+      }
+    };
+
+    fetchCart();
+  }, [id]);
 
   const updateWidth = () => {
     if (selectRef.current && textRef.current) {
@@ -103,15 +109,14 @@ const CategoryPage = () => {
         setProducts(response.data);
         console.log(products);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        setUserLoggedIn(false);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryId]);
+  }, []);
 
   return (
     <div>
@@ -285,17 +290,29 @@ const CategoryPage = () => {
             <p className="text-[30px]">Results for {categoryName}</p>
             <div className="w-[100%]  px-[5px] mx-[10px] flex items-center justify-center">
               <div className="grid w-[100%]   gap-[5px] grid-cols-5">
-                {products.map((product, index) => (
-                  <div key={index}>
-                    <Product
-                      id={product._id}
-                      title={product.name}
-                      imageUrl={product.imageUrl}
-                      subtitle={product.subtitle}
-                      unitPrice={product.unitPrice}
-                    />
-                  </div>
-                ))}
+                {console.log("products", products)}
+                {console.log("role", role)}
+                {products
+                  .filter(({ category }) => {
+                    let cate = "";
+                    if (role === "Company") {
+                      cate = "Recycling";
+                    } else if (role === "Customer") {
+                      cate = "Resell";
+                    }
+                    return cate === category;
+                  })
+                  .map((product, index) => (
+                    <div key={index}>
+                      <Product
+                        id={product._id}
+                        title={product.name}
+                        imageUrl={product.imageUrl}
+                        subtitle={product.subtitle}
+                        unitPrice={product.unitPrice}
+                      />
+                    </div>
+                  ))}
               </div>
             </div>
           </div>

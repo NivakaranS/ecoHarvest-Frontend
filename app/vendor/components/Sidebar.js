@@ -21,7 +21,7 @@ const Sidebar = () => {
             <FiShoppingCart /> <span>Orders</span>
           </div>
         </Link>
-        <Link href="#">
+        <Link href="/vendor/analysis">
           <div className="flex items-center space-x-2 p-2 hover:bg-yellow-700 rounded cursor-pointer">
             <FiBarChart2 /> <span>Analytics</span>
           </div>

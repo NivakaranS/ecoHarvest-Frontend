@@ -46,6 +46,7 @@ export default function Vehicle() {
 
     const handleStatusChange = (e) => {
         setStatus(e.target.value);
+
     };
 
     const remove = async id => {
@@ -65,6 +66,7 @@ export default function Vehicle() {
     };
 
     const handlePrintPDF = () => {
+
         generatePDF(filteredVehicles, 'Vehicle-Report.pdf', 'vehicle');
     };
     
@@ -134,12 +136,14 @@ export default function Vehicle() {
                         <tr>
                             {['Plate', 'Type', 'Capacity (kg)', 'Status', 'Actions'].map(h => (
                                 <th key={h} className="px-5 py-3 text-left font-semibold">{h}</th>
+
                             ))}
                         </tr>
                     </thead>
                     <tbody className="divide-y">
                         {filteredVehicles.map(v => (
                             <tr key={v._id} className="hover:bg-gray-50">
+
                                 <td className="px-5 py-3">{v.plateNumber}</td>
                                 <td className="px-5 py-3">{v.type}</td>
                                 <td className="px-5 py-3">{v.capacityKg}</td>
@@ -166,6 +170,7 @@ export default function Vehicle() {
                                         title="Delete"
                                     >
                                         <TrashIcon className="w-5 h-5" />
+
                                     </button>
                                 </td>
                             </tr>

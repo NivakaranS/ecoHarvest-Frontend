@@ -6,16 +6,18 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
 import EditProductModal from "../components/EditProductModal";
+import axios from "axios";
 
 export default function Products() {
-
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [productCategories, setProductCategories] = useState([]);
   const productsPerPage = 4;
-
+  
   const handleProductUpdate = (updatedProduct) => {
     setProducts((prev) =>
       prev.map((p) => (p._id === updatedProduct._id ? updatedProduct : p))
@@ -36,15 +38,27 @@ export default function Products() {
     fetchProducts();
   }, []);
 
-  const filteredProducts = products.filter(product => {
-    const query = searchQuery.toLowerCase().trim();
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/productcategories/");
+        setProductCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
 
+    fetchCategories();
+  }, []);
+  
+  const filteredProducts = products.filter((product) => {
+    const query = searchQuery.toLowerCase().trim();
     return (
       product.name.toLowerCase().includes(query) ||
       product.category.toLowerCase().includes(query) ||
       (product.subtitle && product.subtitle.toLowerCase().includes(query))
-  );
-});
+    );
+  });
 
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
@@ -55,7 +69,7 @@ export default function Products() {
       <Sidebar />
       <div className="flex-1 p-6 bg-gray-100">
         <Navbar />
-        
+
         <div className="flex justify-between items-center my-4">
           <h2 className="text-2xl font-bold">Products</h2>
         </div>
@@ -66,12 +80,41 @@ export default function Products() {
             placeholder="Search products..."
             className="w-full p-2 border rounded-md"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1); 
+            }}
           />
 
-          <button className="flex items-center px-3 py-2 bg-white border rounded-md shadow min-w-[150px]">
-            All Categories <FiChevronDown className="ml-2" />
-          </button>
+          <div className="relative">
+            <button
+              className="flex items-center px-3 py-2 bg-white border rounded-md shadow min-w-[150px]"
+              onClick={() => setShowCategoryDropdown((prev) => !prev)}
+            >
+              All Categories <FiChevronDown className="ml-2" />
+            </button>
+            {showCategoryDropdown && (
+              <div className="absolute left-0 mt-2 w-full bg-white border rounded shadow z-10 max-h-48 overflow-y-auto">
+                {productCategories.length > 0 ? (
+                  productCategories.map((category) => (
+                    <div
+                      key={category._id}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setSearchQuery(category.name);
+                        setShowCategoryDropdown(false);
+                        setCurrentPage(1);
+                      }}
+                    >
+                      {category.name}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-4 py-2 text-gray-500">No categories</div>
+                )}
+              </div>
+            )}
+          </div>
 
           <button className="flex items-center px-3 py-2 bg-white border rounded-md shadow min-w-[150px]">
             All Status <FiChevronDown className="ml-2" />
@@ -89,7 +132,12 @@ export default function Products() {
                 key={product._id}
                 product={{
                   ...product,
-                  imageSrc: product.imageUrl,
+                 
+                  imageSrc: product.imageUrl.includes("drive.google.com")
+                ? `https://drive.usercontent.google.com/download?id=${
+                 product.imageUrl.split("/d/")[1]?.split("/")[0]
+                }&export=view`
+:                product.imageUrl,
                   price: `$${product.unitPrice.toFixed(2)}`,
                   oldPrice: `$${product.MRP.toFixed(2)}`,
                   status: product.quantity > 0 ? "In Stock" : "No Stock",
@@ -107,11 +155,44 @@ export default function Products() {
             <p className="text-center col-span-4 text-gray-500">No products found.</p>
           )}
         </div>
+        
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6 space-x-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 bg-white border rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 border rounded ${
+                  currentPage === i + 1 ? "bg-blue-500 text-white" : "bg-white"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 bg-white border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
+
         <EditProductModal
-              isOpen={editModalOpen}
-              onClose={() => setEditModalOpen(false)}
-              product={selectedProduct}
-              onSave={handleProductUpdate}
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          product={selectedProduct}
+          onSave={handleProductUpdate}
         />
       </div>
     </div>

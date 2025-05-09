@@ -1,5 +1,6 @@
 // app/inventory/page.js
 'use client';
+
 import { useState, useEffect } from 'react';
 import Products from './Products';
 import Vehicle from './Vehicle';
@@ -45,6 +46,7 @@ export default function InventoryPage() {
                     ? 'bg-yellow-500 text-white shadow-lg transform scale-105'
                     : 'bg-white text-gray-700 border border-gray-200 hover:bg-yellow-50 hover:border-yellow-200'}
                 `}
+
             >
                 {icons[id]}
                 {label}

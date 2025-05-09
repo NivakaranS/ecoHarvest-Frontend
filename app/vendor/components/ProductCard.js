@@ -101,7 +101,7 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
           src={product.imageSrc}
           alt={product.name}
           fill
-          className="object-contain"
+          className="w-full h-32 object-contain rounded"
         />
       </div>
 

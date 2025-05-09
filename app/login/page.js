@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
+import EcoHarvest from "../images/ecoHarvestLogo.png";
+import Image from "next/image";
 
 const Login = () => {
   const Router = useRouter();
@@ -28,19 +30,21 @@ const Login = () => {
   const [regRepeatPassword, setRegRepeatPassword] = useState("");
 
   const [comFirstName, setComFirstName] = useState("");
-    const [comLastName, setComLastName] = useState("");
-    const [comDateOfBirth, setComDateOfBirth] = useState("");
-    const [comGender, setComGender] = useState("");
-    const [comAddress, setComAddress] = useState("");
-    const [comEmail, setComEmail] = useState("");
-    const [comPhoneNumber, setComPhoneNumber] = useState("");
-    const [comUserName, setComUserName] = useState("");
-    const [comPassword, setComPassword] = useState("");
-    const [comRepeatPassword, setComRepeatPassword] = useState("");
-    const [comCompanyName, setComCompanyName] = useState("");
-    const [comCategory, setComCategory] = useState("");
+  const [comLastName, setComLastName] = useState("");
+  const [comDateOfBirth, setComDateOfBirth] = useState("");
+  const [comGender, setComGender] = useState("");
+  const [comAddress, setComAddress] = useState("");
+  const [comEmail, setComEmail] = useState("");
+  const [comPhoneNumber, setComPhoneNumber] = useState("");
+  const [comUserName, setComUserName] = useState("");
+  const [comPassword, setComPassword] = useState("");
+  const [comRepeatPassword, setComRepeatPassword] = useState("");
+  const [comCompanyName, setComCompanyName] = useState("");
+  const [comCategory, setComCategory] = useState("");
 
+  const [loginError, setLoginError] = useState(false);
 
+  const [registrationError, setRegistrationError] = useState(false);
 
   const router = useRouter();
 
@@ -71,6 +75,7 @@ const Login = () => {
           router.push("/vendor");
           break;
 
+        case "Company":
         case "Customer":
           router.push("/");
           break;
@@ -79,67 +84,88 @@ const Login = () => {
           break;
       }
       console.log("Login successful");
+      setLoginError(false);
     } catch (err) {
-      console.error("Error in loging in:", err);
+      setLoginError(true);
     }
   };
-
 
   const handleRegistrationTypeClick = (e) => {
     setRegistrationType(e.currentTarget.innerText);
   };
 
   const handleIndividualRegistration = async () => {
-    
-    if(!regFirstName || !regLastName || !regDateOfBirth || !regGender || !regAddress || !regEmail || !regPhoneNumber || !regUserName || !regPassword) {
-        console.log(regFirstName, regLastName, regDateOfBirth, regGender, regAddress, regEmail, regPhoneNumber, regUserName, regPassword)
-        alert("Please fill all the fields");
-        return;
+    if (regPassword !== regRepeatPassword) {
+      alert("Passwords do not match");
+      return;
     }
 
-    if(regPassword !== regRepeatPassword) {
-        alert("Passwords do not match");
-        return;
+    if (!regUserName || !regPassword || !regRepeatPassword) {
+      setRegistrationError(true);
+      return;
     }
+
     try {
-        const response = await axios.post('http://localhost:8000/api/auth/registerIndividualCustomer', {
-            firstName: regFirstName,
-            lastName: regLastName,
-            phoneNumber: regPhoneNumber,
-            email: regEmail,
-            dateOfBirth: regDateOfBirth,
-            gender: regGender,
-            address: regAddress,
-            username: regUserName,
-            password: regPassword,
+      console.log("Registration attempt");
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/registerIndividualCustomer",
+        {
+          firstName: regFirstName,
+          lastName: regLastName,
+          phoneNumber: regPhoneNumber,
+          email: regEmail,
+          dateOfBirth: regDateOfBirth,
+          gender: regGender,
+          address: regAddress,
+          username: regUserName,
+          password: regPassword,
+        }
+      );
 
-        })
-        console.log(response.data);
+      console.log("Registration successful:", response.data);
 
-        window.location.reload()
+      window.location.reload();
+    } catch (error) {
+      console.error("Registration error:", error);
 
-        
-
-    } catch(error) {
-        console.error("Error in registering:", error);
+      if (error.response) {
+        alert(
+          `Registration failed: ${
+            error.response.data.message || error.response.statusText
+          }`
+        );
+      } else if (error.request) {
+        alert("Registration failed: No response from server");
+      } else {
+        alert("Registration failed: " + error.message);
+      }
     }
-
-  }
+  };
 
   const handleBusinessRegistration = async () => {
-    
-    if(!comFirstName || !comLastName || !comDateOfBirth || !comGender || !comAddress || !comEmail || !comPhoneNumber || !comUserName || !comPassword || !comCompanyName || !comCategory) {
-        console.log(comFirstName, comLastName, comAddress, comDateOfBirth, comGender, comEmail, comPhoneNumber, comUserName, comPassword, comCompanyName, comCategory)
-        alert("Please fill all the fields");
-        return;
-    }
-
-    if(comPassword !== comRepeatPassword) {
-        alert("Passwords do not match");
-        return;
-    }
-    try {
-        const response = await axios.post('http://localhost:8000/api/auth/registerCompanyCustomer', {
+    if (comPassword !== comRepeatPassword) {
+      alert("Passwords do not match");
+      return;
+    } else if (!comUserName || !comPassword || !comRepeatPassword) {
+      console.log(
+        comFirstName,
+        comLastName,
+        comAddress,
+        comDateOfBirth,
+        comGender,
+        comEmail,
+        comPhoneNumber,
+        comUserName,
+        comPassword,
+        comCompanyName,
+        comCategory
+      );
+      setRegistrationError(true);
+    } else {
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/api/auth/registerCompanyCustomer",
+          {
             firstName: comFirstName,
             lastName: comLastName,
             companyName: comCompanyName,
@@ -151,20 +177,24 @@ const Login = () => {
             category: comCategory,
             username: comUserName,
             password: comPassword,
-
-        })
+          }
+        );
         console.log(response.data);
 
-        window.location.reload()
-
-        
-
-    } catch(error) {
+        window.location.reload();
+      } catch (error) {
         console.error("Error in registering:", error);
+      }
     }
+  };
 
-  }
+  const handleRegistrationOne = () => {
+    setRegistrationPage(1);
+  };
 
+  const handleRegistrationTwo = () => {
+    setRegistrationPage(2);
+  };
 
   return (
     <div className="w-[100%] flex items-center justify-center h-[100vh] text-black">
@@ -173,7 +203,6 @@ const Login = () => {
           <p className="text-[35px] mb-[20px]">Login</p>
           <div className="flex flex-col space-y-[17px]">
             <div className="flex relative flex-col">
-
               <input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -204,7 +233,7 @@ const Login = () => {
                 <input
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  type="text"
+                  type="password"
                   className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                   placeholder=" "
                 />
@@ -225,9 +254,6 @@ const Login = () => {
                   Password
                 </label>
               </div>
-              <p className="text-[12px] mt-[1px] w-[100%] flex items-center hover:underline cursor-pointer justify-end">
-                Forgot password?
-              </p>
             </div>
           </div>
           <div className="flex flex-col items-center justify-center">
@@ -238,7 +264,7 @@ const Login = () => {
               <p>Login</p>
             </div>
             <p className="mt-[2px] text-[13px]">
-              Don't have an account?
+              Don&apos;t have an account?
               <span
                 onClick={handleLoginClick}
                 className=" ml-[2px] text-blue-800 cursor-pointer"
@@ -247,6 +273,11 @@ const Login = () => {
               </span>
             </p>
           </div>
+          {loginError && (
+            <div className="relative flex mt-[10px] items-center justify-center text-red-900 text-[13px] py-[3px] rounded-[3px] ring-[0.5px] ring-red-900 bg-red-400">
+              <p>Invalid Username or Password</p>
+            </div>
+          )}
         </div>
       </div>
       <div className="w-[23.6%] h-[100%] bg-gray-200 flex ring-[0.5px] ring-gray-500 items-center justify-center"></div>
@@ -435,7 +466,20 @@ const Login = () => {
                   </div>
                   <div className="flex flex-col items-center justify-center">
                     <div
-                      onClick={() => setRegistrationPage(2)}
+                      onClick={() => {
+                        if (
+                          regFirstName &&
+                          regLastName &&
+                          regDateOfBirth &&
+                          regGender &&
+                          regAddress
+                        ) {
+                          setRegistrationPage(2);
+                          setRegistrationError(false);
+                        } else {
+                          setRegistrationError(true);
+                        }
+                      }}
                       className="flex mt-[19px] ring-yellow-700 ring-[0.5px] flex-col items-center justify-center w-[100%] bg-[#FDAA1C] text-[15px] cursor-pointer py-[4px] rounded-[3px]"
                     >
                       <p>Continue</p>
@@ -448,6 +492,11 @@ const Login = () => {
                       >
                         Login
                       </span>
+                      {registrationError && (
+                        <div className="bg-red-300 mt-[5px] py-[3px] px-[20px] ring-[1px] ring-red-800 text-red-950 rounded-[5px]">
+                          <p>Please fill all the fields</p>
+                        </div>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -479,7 +528,7 @@ const Login = () => {
                     <input
                       type="text"
                       value={regEmail}
-                        onChange={(e) => setRegEmail(e.target.value)}
+                      onChange={(e) => setRegEmail(e.target.value)}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -505,7 +554,7 @@ const Login = () => {
                     <input
                       type="text"
                       value={regPhoneNumber}
-                        onChange={(e) => setRegPhoneNumber(e.target.value)}
+                      onChange={(e) => setRegPhoneNumber(e.target.value)}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -529,7 +578,14 @@ const Login = () => {
 
                   <div className="flex flex-col items-center justify-center">
                     <div
-                      onClick={() => setRegistrationPage(3)}
+                      onClick={() => {
+                        if (regEmail && regPhoneNumber) {
+                          setRegistrationPage(3);
+                          setRegistrationError(false);
+                        } else {
+                          setRegistrationError(true);
+                        }
+                      }}
                       className="flex mt-[19px] ring-yellow-700 ring-[0.5px] flex-col items-center justify-center w-[100%] bg-[#FDAA1C] text-[15px] cursor-pointer py-[4px] rounded-[3px]"
                     >
                       <p>Continue</p>
@@ -543,6 +599,12 @@ const Login = () => {
                         Login
                       </span>
                     </p>
+
+                    {registrationError && (
+                      <div className="bg-red-300 mt-[5px] py-[3px] px-[20px] ring-[1px] ring-red-800 text-red-950 rounded-[5px]">
+                        <p>Please fill all the fields</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -573,7 +635,7 @@ const Login = () => {
                     <input
                       type="text"
                       value={regUserName}
-                        onChange={(e) => setRegUserName(e.target.value)}
+                      onChange={(e) => setRegUserName(e.target.value)}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -599,7 +661,7 @@ const Login = () => {
                     <input
                       type="text"
                       value={regPassword}
-                        onChange={(e) => setRegPassword(e.target.value)}
+                      onChange={(e) => setRegPassword(e.target.value)}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -624,7 +686,7 @@ const Login = () => {
                     <input
                       type="text"
                       value={regRepeatPassword}
-                        onChange={(e) => setRegRepeatPassword(e.target.value)}
+                      onChange={(e) => setRegRepeatPassword(e.target.value)}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -647,7 +709,10 @@ const Login = () => {
                   </div>
 
                   <div className="flex flex-col items-center justify-center">
-                    <div onClick={handleIndividualRegistration} className="flex mt-[19px] ring-yellow-700 ring-[0.5px] flex-col items-center justify-center w-[100%] bg-[#FDAA1C] text-[15px] cursor-pointer py-[4px] rounded-[3px]">
+                    <div
+                      onClick={handleIndividualRegistration}
+                      className="flex mt-[19px] ring-yellow-700 ring-[0.5px] flex-col items-center justify-center w-[100%] bg-[#FDAA1C] text-[15px] cursor-pointer py-[4px] rounded-[3px]"
+                    >
                       <p>Register</p>
                     </div>
                     <p className="mt-[2px] text-[13px]">
@@ -659,6 +724,12 @@ const Login = () => {
                         Login
                       </span>
                     </p>
+
+                    {registrationError && (
+                      <div className="bg-red-300 mt-[5px] py-[3px] px-[20px] ring-[1px] ring-red-800 text-red-950 rounded-[5px]">
+                        <p>Please fill all the fields</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -841,12 +912,23 @@ const Login = () => {
                         Category
                       </label>
                     </div>
-
-                   
                   </div>
                   <div className="flex flex-col items-center justify-center">
                     <div
-                      onClick={() => setRegistrationPage(2)}
+                      onClick={() => {
+                        if (
+                          comCompanyName &&
+                          comFirstName &&
+                          comLastName &&
+                          comDateOfBirth &&
+                          comGender &&
+                          comCategory
+                        ) {
+                          setRegistrationPage(2);
+                        } else {
+                          setRegistrationError(true);
+                        }
+                      }}
                       className="flex mt-[19px] ring-yellow-700 ring-[0.5px] flex-col items-center justify-center w-[100%] bg-[#FDAA1C] text-[15px] cursor-pointer py-[4px] rounded-[3px]"
                     >
                       <p>Continue</p>
@@ -860,6 +942,12 @@ const Login = () => {
                         Login
                       </span>
                     </p>
+
+                    {registrationError && (
+                      <div className="bg-red-300 mt-[5px] py-[3px] px-[20px] ring-[1px] ring-red-800 text-red-950 rounded-[5px]">
+                        <p>Please fill all the fields</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : registrationPage === 2 ? (
@@ -890,7 +978,7 @@ const Login = () => {
                     <input
                       type="text"
                       value={comEmail}
-                        onChange={(e) => setComEmail(e.target.value)}
+                      onChange={(e) => setComEmail(e.target.value)}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -913,15 +1001,15 @@ const Login = () => {
                   </div>
 
                   <div className="flex relative flex-col">
-                      <input
-                        type="text"
-                        value={comAddress}
-                        onChange={(e) => setComAddress(e.target.value)}
-                        className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
-                        placeholder=" "
-                      />
-                      <label
-                        className="absolute left-[10px] text-gray-500 rounded-[5px] px-[10px] bg-white transition-all duration-200 transform
+                    <input
+                      type="text"
+                      value={comAddress}
+                      onChange={(e) => setComAddress(e.target.value)}
+                      className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
+                      placeholder=" "
+                    />
+                    <label
+                      className="absolute left-[10px] text-gray-500 rounded-[5px] px-[10px] bg-white transition-all duration-200 transform
                     -translate-y-1/2                            
                     peer-placeholder-shown:top-1/2              
                     peer-placeholder-shown:translate-y-[-50%]   
@@ -933,18 +1021,16 @@ const Login = () => {
                     top-0                                       
                     text-[13px]
                     pointer-events-none"
-                      >
-                        Address
-                      </label>
-                    </div>
-
-                    
+                    >
+                      Address
+                    </label>
+                  </div>
 
                   <div className="flex relative flex-col">
                     <input
                       type="text"
                       value={comPhoneNumber}
-                        onChange={(e) => setComPhoneNumber(e.target.value)}
+                      onChange={(e) => setComPhoneNumber(e.target.value)}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -968,7 +1054,14 @@ const Login = () => {
 
                   <div className="flex flex-col items-center justify-center">
                     <div
-                      onClick={() => setRegistrationPage(3)}
+                      onClick={() => {
+                        if (comEmail && comAddress && comPhoneNumber) {
+                          setRegistrationPage(3);
+                          setRegistrationError(false);
+                        } else {
+                          setRegistrationError(true);
+                        }
+                      }}
                       className="flex mt-[19px] ring-yellow-700 ring-[0.5px] flex-col items-center justify-center w-[100%] bg-[#FDAA1C] text-[15px] cursor-pointer py-[4px] rounded-[3px]"
                     >
                       <p>Continue</p>
@@ -982,6 +1075,12 @@ const Login = () => {
                         Login
                       </span>
                     </p>
+
+                    {registrationError && (
+                      <div className="bg-red-300 mt-[5px] py-[3px] px-[20px] ring-[1px] ring-red-800 text-red-950 rounded-[5px]">
+                        <p>Please fill all the fields</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -1012,7 +1111,7 @@ const Login = () => {
                     <input
                       type="text"
                       value={comUserName}
-                        onChange={(e) => setComUserName(e.target.value)}
+                      onChange={(e) => setComUserName(e.target.value)}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -1038,7 +1137,7 @@ const Login = () => {
                     <input
                       type="text"
                       value={comPassword}
-                        onChange={(e) => setComPassword(e.target.value)}
+                      onChange={(e) => setComPassword(e.target.value)}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -1063,7 +1162,7 @@ const Login = () => {
                     <input
                       type="text"
                       value={comRepeatPassword}
-                        onChange={(e) => setComRepeatPassword(e.target.value)}
+                      onChange={(e) => setComRepeatPassword(e.target.value)}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -1086,7 +1185,10 @@ const Login = () => {
                   </div>
 
                   <div className="flex flex-col items-center justify-center">
-                    <div onClick={handleBusinessRegistration} className="flex mt-[19px] ring-yellow-700 ring-[0.5px] flex-col items-center justify-center w-[100%] bg-[#FDAA1C] text-[15px] cursor-pointer py-[4px] rounded-[3px]">
+                    <div
+                      onClick={handleBusinessRegistration}
+                      className="flex mt-[19px] ring-yellow-700 ring-[0.5px] flex-col items-center justify-center w-[100%] bg-[#FDAA1C] text-[15px] cursor-pointer py-[4px] rounded-[3px]"
+                    >
                       <p>Register</p>
                     </div>
                     <p className="mt-[2px] text-[13px]">
@@ -1098,6 +1200,12 @@ const Login = () => {
                         Login
                       </span>
                     </p>
+
+                    {registrationError && (
+                      <div className="bg-red-300 mt-[5px] py-[3px] px-[20px] ring-[1px] ring-red-800 text-red-950 rounded-[5px]">
+                        <p>Please fill all the fields</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -1107,10 +1215,10 @@ const Login = () => {
       </div>
       <div
         className={`${
-          loginClick ? "translate-x-[-267px]" : "right-0"
+          loginClick ? "translate-x-[-294px]" : "right-0"
         } transition-transform z-[200] ease-out duration-500 w-[61.8%] absolute  h-[100%] bg-[#101010] text-white flex ring-[0.5px] ring-gray-500 items-center justify-center`}
       >
-        <p className="text-[50px]">EcoHarvest</p>
+        <Image height={280} src={EcoHarvest} />
       </div>
     </div>
   );

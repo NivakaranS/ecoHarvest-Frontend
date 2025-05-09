@@ -14,66 +14,102 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 
 
-export default function Home() {
+export default function CustomerHome() {
 
   const [id, setId] = useState('');
   const [role, setRole] = useState('');
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [cart, setCart] = useState([]);
   const [productsDetail, setProductsDetail] = useState([]);
+  const [numberOfCartItems, setNumberOfCartItems] = useState(0);
 
   const router = useRouter();
 
 
   
-  useEffect(() => {
-    const fetchCookies = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/check-cookie/", {
-          withCredentials: true,
-
-        });
-        
-        console.log(response.data);
-        setId(response.data.id);
-        setRole(response.data.role);
-
-        if(response.data.role === 'Customer') {
-          setUserLoggedIn(true)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userInformation, setUserInformation] = useState([]);
+    const [notifications, setNotifications] = useState([]);
+  
+   
+  
+  
+    
+    useEffect(() => {
+  
+      const fetchCookies = async () => {
+        try {
+          const response = await axios.get(
+            "http://localhost:8000/check-cookie/",
+            {
+              withCredentials: true,
+            }
+          );
+  
           try {
-            const response2 = await axios.get(`http://localhost:8000/cart/${response.data.id}`);
-                        setCart(response2.data.cart);
-                        setProductsDetail(response2.data.products);
-                        console.log("Product items fetched successfully:", response2.data.products);
-                        console.log("Cart items fetched successfully:", response2.data.cart);
-
-          } catch(errr) {
-            setUserLoggedIn(false)
+            console.log('id', response.data.id)
+            const response2 = await axios.get('http://localhost:8000/customers/details/:' + response.data.id)
+            console.log('customer details', response2.data);
+            setUserInformation(response2.data);
+  
+            try {
+              const response3 = await axios.get('http://localhost:8000/notification/:' + response.data.id)
+              console.log('notifications', response3.data);
+              setNotifications(response3.data);
+            } catch(err) {
+              console.error("Error in fetching notifications: ", err)
+            }
+          } catch(err) {
+            console.error("Error in fetching user information: ", err)
           }
           
-
+  
+          setId(response.data.id);
+          setRole(response.data.role);
+  
+          if (response.data.role === "Customer") setIsLoggedIn(true);
+          else router.push("/");
+        } catch (error) {
+  
+          console.error("Error fetching cookies:", error);
+          router.push("/login");
+  
         }
-        else if(response.data.role === 'Vendor') {
-          
-          router.push('/vendor');
-        }
-        else if(response.data.role === 'Admin') {
+      };
+  
+      fetchCookies();
+  
+    }, [])
 
-          router.push('/admin');
-        }
 
-      } catch (error) {
-        setUserLoggedIn(false)
+  useEffect(() => {
+    const fetchCart = async () => {
+      if(!userLoggedIn) {
+        return
+      }
+      try {
+        console.log("iddd", id)
+        const response2 = await axios.get(`http://localhost:8000/cart/${id}`);
+                    setCart(response2.data.cart);
+                    setProductsDetail(response2.data.products);
+                    console.log("Product items fetched successfully:", response2.data.products);
+                    console.log("Cart items fetched successfully:", response2.data.cart);
+                    setNumberOfCartItems(response2.data.cart.products.length);
+                    console.log("Length", response2.data.cart.products.length)
+      } catch(errr) {
+        console.log("Cart Empty")
+
       }
     }
 
-    fetchCookies();
-  }, [])
+    fetchCart();
+
+  }, [id])
 
 
   return (
     <div >
-      <Navigation productsDetail={productsDetail} id={id} cart={cart} userLoggedIn={userLoggedIn} />
+      <Navigation numberOfCartItems={numberOfCartItems} productsDetail={productsDetail} id={id} cart={cart} userLoggedIn={userLoggedIn} />
       <Hero />
       <AllCategories/>
       {/* <TopSellers/>
