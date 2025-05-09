@@ -266,15 +266,15 @@ export default function Discount() {
           </thead>
           <tbody>
             {discounts.map((item) => {
-              const originalPrice = item.productId.unitPrice;
+              const originalPrice = item.productId?.unitPrice;
               const discountAmount = (originalPrice * item.percentage) / 100;
               const currentPrice = originalPrice - discountAmount;
 
               return (
                 <tr key={item._id}>
-                  <td className="border px-4 py-2">{item.productId.name}</td>
+                  <td className="border px-4 py-2">{item.productId?.name}</td>
                   <td className="border px-4 py-2">
-                    {item.productId.category}
+                    {item.productId?.category}
                   </td>
                   <td className="border px-4 py-2">${originalPrice}</td>
                   <td className="border px-4 py-2">{item.percentage}%</td>

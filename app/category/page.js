@@ -26,6 +26,7 @@ const CategoryPage = () => {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [cart, setCart] = useState();
   const [productsDetail, setProductsDetail] = useState([]);
+  const [discounts, setDiscounts] = useState();
 
   const router = useRouter();
 
@@ -43,7 +44,7 @@ const CategoryPage = () => {
         setId(response.data.id);
         setRole(response.data.role);
 
-        if (response.data.role === "Customer") {
+        if (response.data.role === "Customer" || "Company") {
           setUserLoggedIn(true);
         } else if (response.data.role === "Vendor") {
           router.push("/vendor");
@@ -116,6 +117,19 @@ const CategoryPage = () => {
     };
 
     fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const fetchDiscounts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/discount/");
+        setDiscounts(response.data);
+        console.log("discounts", response.data);
+      } catch (error) {
+        console.error("Error fetching discounts", error);
+      }
+    };
+    fetchDiscounts();
   }, []);
 
   return (
@@ -310,6 +324,7 @@ const CategoryPage = () => {
                         imageUrl={product.imageUrl}
                         subtitle={product.subtitle}
                         unitPrice={product.unitPrice}
+                        discounts={discounts}
                       />
                     </div>
                   ))}
