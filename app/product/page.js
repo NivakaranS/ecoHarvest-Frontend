@@ -229,7 +229,6 @@ const ProductPage = () => {
       />
       {productDetails.map((product, index) => (
         <div key={index} className="">
-
           <div className="text-black  bg-[#F5F5F5] w-[100%] flex flex-col space-y-[10px] justify-center items-center ">
             <div className="bg-gradient-to-b pt-[16vh] flex flex-col items-center justify-center   from-gray-400 to-[#F5F5F5] h-[100%] w-[100%] ">
               <div className="w-[94vw]   flex flex-row justify-center items-center rounded-[15px] overflow-hidden  ">
@@ -238,30 +237,6 @@ const ProductPage = () => {
                     <div className="drop-shadow-lg hover:drop-shadow-2xl rounded-[10px] flex flex-col items-center justify-between p-[10px]">
                       <div className="absolute top-0 right-0 bg-red-500 text-white text-[12px] px-3 py-[3px] rounded-bl-lg font-semibold shadow-md z-10">
                         -{discountPercentage}%
-
-      <div className="text-black  bg-[#F5F5F5] w-[100%] flex flex-col space-y-[10px] justify-center items-center ">
-      
-        <div className="bg-gradient-to-b pt-[16vh] flex flex-col items-center justify-center   from-gray-400 to-[#F5F5F5] h-[100%] w-[100%] ">
-          
-            <div className="w-[94vw]   flex flex-row justify-center items-center rounded-[15px] overflow-hidden  "
-            >
-              <div className=" select-none w-[38.2%] ml-[10px] border-[0.5px] border-gray-500 rounded-[10px] bg-[#F5F5F5] h-[78vh] mt-[10px] mb-[40px] ">
-                <div className="leading-[25px]  py-[20px] px-[25px]">
-                  <p className="leading-[32px] text-[28px] w-[80%]">
-                    {product.name}
-                  </p>
-
-                  <div className="flex relative flex-row items-center justify-between">
-                    <div>
-                      <p className=" text-[20px] ml-[10px] text-orange-500">
-                        {product.subtitle}
-                      </p>
-                      <div className="flex flex-row items-center mt-[10px]  space-x-[3px]">
-                        <StarRating rating={product.averageRating} />
-                        <p className="text-gray-700 flex items-center justify-center text-[13px]">
-                          <span className="text-[15px]">{product.averageRating}</span>
-                          ({product.numberOfReviews})</p>
-
                       </div>
                     </div>
                   )}
