@@ -22,6 +22,9 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
     }
   };
 
+
+  console.log("img",product.imageSrc)
+
   return (
     <div className="p-4 bg-white rounded-lg shadow-md">
       <div className="relative w-full h-32 rounded overflow-hidden">
@@ -29,7 +32,7 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
           src={product.imageSrc}
           alt={product.name}
           fill
-          className="object-contain"
+          className="w-full h-32 object-contain rounded"
         />
       </div>
 
