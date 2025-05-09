@@ -1,25 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 const RecentOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchVendorOrders = async () => {
       try {
-        const res = await fetch("http://localhost:8000/orders");
-        const data = await res.json();
-        setOrders(data);
+        const res = await axios.get("http://localhost:8000/check-cookie/", {
+          withCredentials: true,
+        });
+
+        const { id, role } = res.data;
+
+        if (role !== "Vendor") return;
+
+        const ordersRes = await axios.get(`http://localhost:8000/orders/vendor/${id}`);
+        setOrders(ordersRes.data);
+        setLoading(false);
       } catch (err) {
-        console.error("Failed to fetch orders:", err);
-      } finally {
+        console.error("Failed to load vendor orders", err);
         setLoading(false);
       }
     };
 
-    fetchOrders();
+    fetchVendorOrders();
   }, []);
 
   return (
