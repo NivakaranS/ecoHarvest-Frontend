@@ -139,12 +139,12 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="flex flex-row overflow-y-hidden">
-      <Navigation navClick={navClick} handleNavClick={handleNavClick} />
-      <div className="w-[83vw] min-h-screen overflow-hidden h-[100vh] bg-gray-50 overflow-auto">
-        <TopNavigation notifications={notifications} userInformation={userInformation} id={id} isLoggedIn={isLoggedIn} />
 
-        <div className="overflow-hidden">
+    <div className="flex h-screen">
+      <Navigation navClick={navClick} handleNavClick={handleNavClick} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <TopNavigation id={id} isLoggedIn={isLoggedIn} />
+        <div className="flex-1 overflow-y-auto">
           {renderPage()}
         </div>
 
