@@ -1,13 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { FiBell, FiPlus } from "react-icons/fi";
+import { FiBell, FiPlus, FiLogOut } from "react-icons/fi";
 import ProductModal from "./ProductModal";
 
 const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        alert("Logout failed!");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+  
   const handleAddProduct = async (productData, resetForm) => {
     const vendorId = "67ebdddc067a1c7f6e6eff86";
 
@@ -60,6 +77,12 @@ const Navbar = () => {
           <button className="p-2 bg-gray-200 rounded-full">
             <FiBell />
           </button>
+          <button
+              className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition"
+              onClick={handleLogout}
+              title="Logout">
+              <FiLogOut />
+            </button>
         </div>
       </div>
 

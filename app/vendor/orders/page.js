@@ -8,18 +8,28 @@ import axios from "axios";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchVendorOrders = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/orders");
-        setOrders(response.data);
+        const res = await axios.get("http://localhost:8000/check-cookie/", {
+          withCredentials: true,
+        });
+
+        const { id, role } = res.data;
+        if (role !== "Vendor") return;
+
+        const ordersRes = await axios.get(`http://localhost:8000/orders/vendor/${id}`);
+        setOrders(ordersRes.data);
+        setLoading(false);
       } catch (err) {
-        console.error("Failed to fetch orders:", err);
+        console.error("Failed to load vendor orders:", err);
+        setLoading(false);
       }
     };
 
-    fetchOrders();
+    fetchVendorOrders();
   }, []);
 
   return (
@@ -29,7 +39,7 @@ export default function OrdersPage() {
         <Navbar />
         <div className="p-6">
           <h2 className="text-2xl font-semibold">Orders</h2>
-          <p className="text-gray-600">Manage and track all orders</p>
+          <p className="text-gray-600">Manage and track all your orders</p>
 
           <div className="flex items-center gap-3 mt-4">
             <input
@@ -52,64 +62,78 @@ export default function OrdersPage() {
           </div>
 
           <div className="mt-4 bg-white shadow rounded-lg p-4">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-2 px-4">Order Number</th>
-                  <th className="py-2 px-4">Customer</th>
-                  <th className="py-2 px-4">Date</th>
-                  <th className="py-2 px-4">Status</th>
-                  <th className="py-2 px-4">Amount</th>
-                  <th className="py-2 px-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order._id} className="border-b">
-                    <td className="py-2 px-4">{order.orderNumber}</td>
-                    <td className="py-2 px-4">
-                      {order.customer || "N/A"}
-                    </td>
-                    <td className="py-2 px-4">
-                      {new Date(order.orderTime).toLocaleDateString()}
-                    </td>
-                    <td className="py-2 px-4">
-                      <span
-                        className={`px-2 py-1 rounded-md text-xs font-semibold ${
-                          order.status === "Completed"
-                            ? "bg-green-100 text-green-600"
-                            : order.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-600"
-                            : "bg-red-100 text-red-600"
-                        }`}
-                      >
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="py-2 px-4">${order.totalAmount.toFixed(2)}</td>
-                    <td className="py-2 px-4">
-                      <button className="text-gray-600">
-                        <BsThreeDotsVertical />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {loading ? (
+              <p>Loading orders...</p>
+            ) : (
+              <>
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="py-2 px-4">Order Number</th>
+                      <th className="py-2 px-4">Customer</th>
+                      <th className="py-2 px-4">Date</th>
+                      <th className="py-2 px-4">Status</th>
+                      <th className="py-2 px-4">Amount</th>
+                      <th className="py-2 px-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.map((order) => (
+                      <tr key={order._id} className="border-b">
+                        <td className="py-2 px-4">{order.orderNumber}</td>
+                        <td className="py-2 px-4">{order.customer || "N/A"}</td>
+                        <td className="py-2 px-4">
+                          {new Date(order.orderTime).toLocaleDateString()}
+                        </td>
+                        <td className="py-2 px-4">
+                          <span
+                            className={`px-2 py-1 rounded-md text-xs font-semibold ${
+                              order.status === "Completed"
+                                ? "bg-green-100 text-green-600"
+                                : order.status === "Pending"
+                                ? "bg-yellow-100 text-yellow-600"
+                                : "bg-red-100 text-red-600"
+                            }`}
+                          >
+                            {order.status}
+                          </span>
+                        </td>
+                        <td className="py-2 px-4">
+                          ${order.totalAmount.toFixed(2)}
+                        </td>
+                        <td className="py-2 px-4">
+                          <button className="text-gray-600">
+                            <BsThreeDotsVertical />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
 
-            {orders.length === 0 && (
-              <p className="text-gray-500 text-center py-4">No orders found</p>
+                {orders.length === 0 && (
+                  <p className="text-gray-500 text-center py-4">
+                    No orders found
+                  </p>
+                )}
+              </>
             )}
           </div>
 
-          <div className="flex justify-between items-center mt-4 text-gray-600 text-sm">
-            <p>Showing 1 to {orders.length} of {orders.length} entries</p>
-            <div className="flex items-center gap-2">
-              <button className="px-3 py-1 border rounded-md">Previous</button>
-              <button className="px-3 py-1 bg-yellow-500 text-white rounded-md">1</button>
-              <button className="px-3 py-1 border rounded-md">Next</button>
+          {!loading && (
+            <div className="flex justify-between items-center mt-4 text-gray-600 text-sm">
+              <p>
+                Showing 1 to {orders.length} of {orders.length} entries
+              </p>
+              <div className="flex items-center gap-2">
+                <button className="px-3 py-1 border rounded-md">Previous</button>
+                <button className="px-3 py-1 bg-yellow-500 text-white rounded-md">
+                  1
+                </button>
+                <button className="px-3 py-1 border rounded-md">Next</button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
