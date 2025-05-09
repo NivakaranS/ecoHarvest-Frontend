@@ -27,40 +27,60 @@ export default function CustomerHome() {
 
 
   
-  useEffect(() => {
-    const fetchCookies = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/check-cookie/", {
-          withCredentials: true,
-
-        });
-        
-        console.log(response.data);
-        setId(response.data.id);
-        setRole(response.data.role);
-
-        if(response.data.role === 'Customer') {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userInformation, setUserInformation] = useState([]);
+    const [notifications, setNotifications] = useState([]);
+  
+   
+  
+  
+    
+    useEffect(() => {
+  
+      const fetchCookies = async () => {
+        try {
+          const response = await axios.get(
+            "http://localhost:8000/check-cookie/",
+            {
+              withCredentials: true,
+            }
+          );
+  
+          try {
+            console.log('id', response.data.id)
+            const response2 = await axios.get('http://localhost:8000/customers/details/:' + response.data.id)
+            console.log('customer details', response2.data);
+            setUserInformation(response2.data);
+  
+            try {
+              const response3 = await axios.get('http://localhost:8000/notification/:' + response.data.id)
+              console.log('notifications', response3.data);
+              setNotifications(response3.data);
+            } catch(err) {
+              console.error("Error in fetching notifications: ", err)
+            }
+          } catch(err) {
+            console.error("Error in fetching user information: ", err)
+          }
           
-          setUserLoggedIn(true)
-          
-
+  
+          setId(response.data.id);
+          setRole(response.data.role);
+  
+          if (response.data.role === "Customer") setIsLoggedIn(true);
+          else router.push("/");
+        } catch (error) {
+  
+          console.error("Error fetching cookies:", error);
+          router.push("/login");
+  
         }
-        else if(response.data.role === 'Vendor') {
-          
-          router.push('/vendor');
-        }
-        else if(response.data.role === 'Admin') {
+      };
+  
+      fetchCookies();
+  
+    }, [])
 
-          router.push('/admin');
-        }
-
-      } catch (error) {
-        setUserLoggedIn(false)
-      }
-    }
-
-    fetchCookies();
-  }, [])
 
   useEffect(() => {
     const fetchCart = async () => {

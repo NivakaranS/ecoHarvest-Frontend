@@ -18,18 +18,33 @@ import Discount from "./pages/Discount";
 import Payment from "./pages/Payment";
 import Reports from "./pages/Reports";
 import UserManagement from "./pages/UserManagement";
+import ProfileManagement from "./pages/ProfileManagement";
 
+import {io} from "socket.io-client";
 
 
 export default function AdminDashboard() {
   const [navClick, setNavClick] = useState("Inventory");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInformation, setUserInformation] = useState([]);
 
   const [role, setRole] = useState('');
   const [id, setId] = useState('');
   
+  const [notifications, setNotifications] = useState([]);
+
   const router = useRouter()
 
+  const socket = io('http://localhost:8000', {
+    query: {
+      id: id,
+      role: role
+    }
+  })
+
+
+
+  
 
   useEffect(() => {
 
@@ -41,6 +56,24 @@ export default function AdminDashboard() {
             withCredentials: true,
           }
         );
+
+        try {
+          console.log('id', response.data.id)
+          const response2 = await axios.get('http://localhost:8000/admin/:' + response.data.id)
+          console.log('admin', response2.data);
+          setUserInformation(response2.data);
+
+          try {
+            const response3 = await axios.get('http://localhost:8000/notification/:' + response.data.id)
+            console.log('notifications', response3.data);
+            setNotifications(response3.data);
+          } catch(err) {
+            console.error("Error in fetching notifications: ", err)
+          }
+        } catch(err) {
+          console.error("Error in fetching user information: ", err)
+        }
+        
 
         setId(response.data.id);
         setRole(response.data.role);
@@ -59,9 +92,21 @@ export default function AdminDashboard() {
 
   }, [])
 
+
+  socket.emit('ready');
+
+  socket.on('connect', () => {
+    console.log('Connected to socket server with id:',  {id, role});
+  })
+
+
+
   if(!isLoggedIn) {
     return null
   }
+
+
+ 
 
 
   const handleNavClick = (e) => {
@@ -85,6 +130,8 @@ export default function AdminDashboard() {
         return <Advertisements/> 
       case "Order Management":
           return <OrdersDashboard/>
+      case "Profile Management":
+        return <ProfileManagement id={id} notifications={notifications} userInformation={userInformation}/>
 
       default:
         return <div className="p-6">Welcome Admin</div>;
@@ -95,7 +142,7 @@ export default function AdminDashboard() {
     <div className="flex flex-row overflow-y-hidden">
       <Navigation navClick={navClick} handleNavClick={handleNavClick} />
       <div className="w-[83vw] min-h-screen overflow-hidden h-[100vh] bg-gray-50 overflow-auto">
-        <TopNavigation id={id} isLoggedIn={isLoggedIn} />
+        <TopNavigation notifications={notifications} userInformation={userInformation} id={id} isLoggedIn={isLoggedIn} />
 
         <div className="overflow-hidden">
           {renderPage()}

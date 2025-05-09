@@ -23,7 +23,7 @@ const LogoutButton = () => {
 
   return (
     <button
-      className="bg-red-600 rounded-[5px] px-[10px] py-[5px]"
+      className="bg-red-500 border-red-900 border-[1px] rounded-[5px] px-[10px] py-[5px]"
       onClick={handleLogout}
     >
       Logout

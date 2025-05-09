@@ -18,6 +18,16 @@ export default function UserManagement() {
   const [loading, setLoading] = useState(false)
 
 
+  const [vendorFirstName, setVendorFirstName] = useState('')
+  const [vendorLastName, setVendorLastName] = useState('')
+  const [vendorEmail, setVendorEmail] = useState('')
+  const [vendorPhoneNumber, setVendorPhoneNumber] = useState('')
+  const [vendorBusinessName, setVendorBusinessName] = useState('')
+  const [vendorPassword, setVendorPassword] = useState('')
+  const [vendorUsername, setVendorUsername] = useState('')
+
+
+
 
   useEffect(() => {
     const fetchUserManagement = async () => {
@@ -70,14 +80,103 @@ export default function UserManagement() {
     }
   }
 
+  const registerVendor = async () => {
+    if(!vendorFirstName || !vendorLastName || !vendorEmail || !vendorPhoneNumber || !vendorBusinessName || !vendorUsername || !vendorPassword) {
+      alert('Please fill all the fields')
+      return
+    }
+
+    console.log(vendorFirstName, vendorLastName, vendorEmail, vendorPhoneNumber, vendorBusinessName, vendorUsername, vendorPassword)
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/auth/registerVendor', {
+        firstName: vendorFirstName,
+        lastName: vendorLastName,
+        email: vendorEmail,
+        phoneNumber: vendorPhoneNumber,
+        businessName: vendorBusinessName,
+        username: vendorUsername,
+        password: vendorPassword
+    })
+      console.log(response.data)
+      setVendorFirstName('')
+      setVendorLastName('')
+      setVendorEmail('')
+      setVendorPhoneNumber('')
+      setVendorBusinessName('')
+      setVendorUsername('')
+      setVendorPassword('')
+      console.log('Vendor registered successfully')
+    } catch (error) {
+      console.log('Error registering admin:', error);
+    }
+  }
 
 
 
 
   return (
-    <div className="flex flex-row">
-      <div className="w-[75%] h-[90vh] py-[20px] overflow-y-scroll px-[25px] bg-[#F5F5F5] flex flex-col">
+    <div className="flex  border-t-[1px] border-gray-500 flex-row">
+      <div className="w-[75%] text-black  h-[90vh] py-[20px] overflow-y-scroll px-[25px] bg-gray-100  flex flex-col">
         <p className="text-black text-[21px]">User Management System</p>
+        <div>
+          <p className="text-[25px]">Register Vendor</p>
+          <div className="flex flex-col space-y-[20px] ">
+            <div>
+              <p className="text-[20px]">Business Information</p>
+              <div className="flex flex-row space-x-[20px] w-[100%]">
+                <div className="w-[100%]">
+                  <p>First name</p>
+                  <input value={vendorFirstName} onChange={(e) => setVendorFirstName(e.currentTarget.value)} type="text" className="border-[1px] w-[100%] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
+                </div>
+                <div className="w-[100%]">
+                  <p>Last name</p>
+                  <input value={vendorLastName} onChange={(e) => setVendorLastName(e.currentTarget.value)} type="text" className="border-[1px] w-[100%] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
+                </div>
+              </div>
+
+              <div className="flex flex-row">
+              <div className="w-[100%]">
+                  <p>Business name</p>
+                  <input value={vendorBusinessName} onChange={(e) => setVendorBusinessName(e.currentTarget.value)} type="text" className="border-[1px] w-[100%] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
+                </div>
+                
+              </div>
+            </div>
+
+            <div className="w-[100%]">
+              <p className="text-[20px]">Contact Information</p>
+              <div className="flex flex-row space-x-[20px] w-[100%]">
+                <div className="w-[100%]">
+                  <p>Email</p>
+                  <input value={vendorEmail} onChange={(e) => setVendorEmail(e.currentTarget.value)} type="text" className="border-[1px] w-[100%] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
+                </div>
+                <div className="w-[100%]">
+                  <p>Phone number</p>
+                  <input value={vendorPhoneNumber} onChange={(e) => setVendorPhoneNumber(e.currentTarget.value)} type="text" className="border-[1px] w-[100%] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
+                </div>
+              </div>
+            </div>
+
+            <div className="">
+              <p className="text-[20px]">Account Information</p>
+              <div className="flex flex-row space-x-[20px] w-[100%]">
+                <div className="w-[100%]">
+                  <p>Username</p>
+                  <input value={vendorUsername} onChange={(e) => setVendorUsername(e.currentTarget.value)} type="text" className="border-[1px] w-[100%] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
+                </div>
+                <div className="w-[100%]">
+                  <p>Password</p>
+                  <input value={vendorPassword} onChange={(e) => setVendorPassword(e.currentTarget.value)} type="text" className="border-[1px] w-[100%] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
+                </div>
+              </div>
+              <div className="mt-[15px] bg-yellow-500 flex items-center ring-yellow-800 ring-[0.5px] cursor-pointer justify-center py-[5px] rounded-[5px] " onClick={registerVendor}>
+                <p>Register </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
 
         {loading ? (
           <div className="flex justify-center items-center h-full">

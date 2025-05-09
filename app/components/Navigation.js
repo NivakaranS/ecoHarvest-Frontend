@@ -236,7 +236,8 @@ const Navigation = ({id, productsDetail, userLoggedIn, cart, numberOfCartItems})
           </div>
           
           <div onClick={() => router.push('/order-history')} className="cursor-pointer"><p>Order History</p></div>
-          <div className="cursor-pointer"><p>Favourites</p></div>
+          <div><p>Favourites</p></div>
+          <div onClick={() => router.push('/account')} className="cursor-pointer"><p>Account Management</p></div>
         </div>
         
         <div 

@@ -4,12 +4,98 @@ import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { FiCamera } from "react-icons/fi";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const [vendor, setVendor] = useState(null);
   const [vendorId, setVendorId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+
+
+  const [businessName, setBusinesName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userInformation, setUserInformation] = useState([]);
+    const [role, setRole] = useState('');
+    const [id, setId] = useState('');
+    const [notifications, setNotifications] = useState([]);
+  
+    const router = useRouter();
+  
+  
+    
+    useEffect(() => {
+  
+      const fetchCookies = async () => {
+        try {
+          const response = await axios.get(
+            "http://localhost:8000/check-cookie/",
+            {
+              withCredentials: true,
+            }
+          );
+  
+          try {
+            console.log('id', response.data.id)
+            const response2 = await axios.get('http://localhost:8000/vendors/:' + response.data.id)
+            console.log('vendor', response2.data);
+            setUserInformation(response2.data);
+  
+            try {
+              const response3 = await axios.get('http://localhost:8000/notification/:' + response.data.id)
+              console.log('notifications', response3.data);
+              setNotifications(response3.data);
+            } catch(err) {
+              console.error("Error in fetching notifications: ", err)
+            }
+          } catch(err) {
+            console.error("Error in fetching user information: ", err)
+          }
+          
+  
+          setId(response.data.id);
+          setRole(response.data.role);
+  
+          if (response.data.role === "Vendor") setIsLoggedIn(true);
+          else router.push("/");
+        } catch (error) {
+  
+          console.error("Error fetching cookies:", error);
+          router.push("/login");
+  
+        }
+      };
+  
+      fetchCookies();
+  
+    }, [])
+
+
+  const handleUpdateVendor = async () => {
+    try {
+      const response = await axios.post('http://localhost:8000/api/auth/updateVendor', {
+        vendorId: id,
+        businessName: businessName,
+        phoneNumber: phoneNumber,
+        email: email,
+        username: username,
+        password: password
+
+      })
+      console.log("Vendor updated successfully:", response.data);
+
+    } catch (error) {
+      console.error("Error updating vendor:", error);
+    }
+  }
+
+
 
   useEffect(() => {
     const fetchVendorId = async () => {
@@ -63,12 +149,6 @@ export default function ProfilePage() {
     return tokenCookie ? tokenCookie.split("=")[1] : null;
   };
 
-  const handleChange = (e) => {
-    setVendor((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -156,8 +236,9 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   name="businessName"
-                  value={vendor.businessName}
-                  onChange={handleChange}
+                  value={businessName}
+                  placeholder={userInformation[0].businessName}
+                  onChange={(e) => setBusinesName(e.currentTarget.value)}
                   disabled={!editMode}
                   className="w-full mt-1 p-2 border rounded-md"
                 />
@@ -169,8 +250,9 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   name="phoneNumber"
-                  value={vendor.phoneNumber}
-                  onChange={handleChange}
+                  value={phoneNumber}
+                  placeholder={userInformation[0].phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.currentTarget.value)}
                   disabled={!editMode}
                   className="w-full mt-1 p-2 border rounded-md"
                 />
@@ -181,9 +263,10 @@ export default function ProfilePage() {
                 </label>
                 <input
                   type="email"
+                  placeholder={userInformation[0].email}
                   name="email"
-                  value={vendor.email}
-                  onChange={handleChange}
+                  value={email}
+                  onChange={(e) => setEmail(e.currentTarget.value)}
                   disabled={!editMode}
                   className="w-full mt-1 p-2 border rounded-md"
                 />
@@ -194,9 +277,24 @@ export default function ProfilePage() {
                 </label>
                 <input
                   type="password"
-                  value="********"
-                  disabled
+                  placeholder="********"
+                  value={password}
+                  onChange={(e) => setPassword(e.currentTarget.value)}
+                  disabled={!editMode}
                   className="w-full mt-1 p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 font-medium">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  value={username}
+                  placeholder={userInformation[1].username}
+                  onChange={(e) => setUsername(e.currentTarget.value)}
+                  disabled={!editMode}
+                  className="w-[100%] mt-1 p-2 border rounded-md"
                 />
               </div>
               <div>
@@ -220,14 +318,14 @@ export default function ProfilePage() {
               ) : (
                 <>
                   <button
-                    onClick={handleSave}
+                    onClick={() => handleUpdateVendor()}
                     className="bg-yellow-500 text-white px-4 py-2 rounded-md"
                   >
                     Save Changes
                   </button>
                   <button
                     onClick={() => setEditMode(false)}
-                    className="border px-4 py-2 rounded-md"
+                    className="border bg-gray-500 px-4 py-2 rounded-md"
                   >
                     Cancel
                   </button>
