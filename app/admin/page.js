@@ -143,7 +143,7 @@ export default function AdminDashboard() {
     <div className="flex h-screen">
       <Navigation navClick={navClick} handleNavClick={handleNavClick} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <TopNavigation id={id} isLoggedIn={isLoggedIn} />
+        <TopNavigation userInformation={userInformation} id={id} isLoggedIn={isLoggedIn} />
         <div className="flex-1 overflow-y-auto">
           {renderPage()}
         </div>
