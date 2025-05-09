@@ -66,6 +66,8 @@ export default function CustomerHome() {
   
           setId(response.data.id);
           setRole(response.data.role);
+          setIsLoggedIn(true);
+          setUserLoggedIn(true);
   
           if (response.data.role === "Customer") setIsLoggedIn(true);
           else router.push("/");
