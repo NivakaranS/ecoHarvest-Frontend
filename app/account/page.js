@@ -14,7 +14,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 
 
-export default function CustomerHome() {
+export default function AccountManagement() {
 
   const [id, setId] = useState('');
   const [role, setRole] = useState('');
@@ -33,54 +33,72 @@ export default function CustomerHome() {
   
    
   
+    useEffect(() => {
+        const fetchCookies = async () => {
+          try {
+            const response = await axios.get(
+              "http://localhost:8000/check-cookie/",
+              {
+                withCredentials: true,
+              }
+            );
+            try {
+              console.log('id', response.data.id)
+              const response2 = await axios.get('http://localhost:8000/customers/details/:' + response.data.id)
+              console.log('customer details', response2.data);
+              setUserInformation(response2.data);
+    
+              try {
+                const response3 = await axios.get('http://localhost:8000/notification/:' + response.data.id)
+                console.log('notifications', response3.data);
+                setNotifications(response3.data);
+              } catch(err) {
+                console.error("Error in fetching notifications: ", err)
+              }
+            } catch(err) {
+              console.error("Error in fetching user information: ", err)
+            }
+    
+            console.log(response.data);
+            setId(response.data.id);
+            setRole(response.data.role);
+    
+            if (response.data.role === "Customer") {
+              setUserLoggedIn(true);
+              try {
+                const response2 = await axios.get(
+                  `http://localhost:8000/cart/${response.data.id}`
+                );
+                setCart(response2.data.cart);
+                setProductsDetail(response2.data.products);
+                console.log(
+                  "Product items fetched successfully:",
+                  response2.data.products
+                );
+                console.log(
+                  "Cart items fetched successfully:",
+                  response2.data.cart
+                );
+              } catch (errr) {
+                console.log("Cart Empty");
+           
+            
+              }
+            } else if (response.data.role === "Vendor") {
+              router.push("/vendor");
+            } else if (response.data.role === "Admin") {
+              router.push("/admin");
+            }
+          } catch (error) {
+            router.push("/login");
+          }
+        };
+    
+        fetchCookies();
+      }, []);
+    
   
     
-    useEffect(() => {
-  
-      const fetchCookies = async () => {
-        try {
-          const response = await axios.get(
-            "http://localhost:8000/check-cookie/",
-            {
-              withCredentials: true,
-            }
-          );
-  
-          try {
-            console.log('id', response.data.id)
-            const response2 = await axios.get('http://localhost:8000/customers/details/:' + response.data.id)
-            console.log('customer details', response2.data);
-            setUserInformation(response2.data);
-  
-            try {
-              const response3 = await axios.get('http://localhost:8000/notification/:' + response.data.id)
-              console.log('notifications', response3.data);
-              setNotifications(response3.data);
-            } catch(err) {
-              console.error("Error in fetching notifications: ", err)
-            }
-          } catch(err) {
-            console.error("Error in fetching user information: ", err)
-          }
-          
-  
-          setId(response.data.id);
-          setRole(response.data.role);
-  
-          if (response.data.role === "Customer") setIsLoggedIn(true);
-          else router.push("/");
-        } catch (error) {
-  
-          console.error("Error fetching cookies:", error);
-          router.push("/login");
-  
-        }
-      };
-  
-      fetchCookies();
-  
-    }, [])
-
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -114,7 +132,7 @@ export default function CustomerHome() {
         <div className="w-[90vw] flex pb-[5vh] flex-row min-h-[90vh] mt-[18vh]">
             <div className="w-[70vw] pt-[20px]">
                 <p className="text-[30px]">Account Management</p>
-                <div className="pr-[30px]">
+                {userInformation && userInformation.length> 0 ? <div className="pr-[30px]">
                     <div className="flex flex-row space-x-[20px]  justify-between mt-[20px]">
                         <div className="w-[50%]">
                             <p>First name</p>
@@ -185,8 +203,8 @@ export default function CustomerHome() {
                     <p>Gender {userInformation[2].gender}</p>
              
 
-                </div>
-            </div>
+                </div> : null
+}            </div>
             <div className="w-[30vw] h-[90vh] py-[15px] px-[25px] bg-gray-300 rounded-[15px] ring-[0.5px] ring-gray-800">
                 <p className="text-[20px]">Notifications</p>
                 <div>
@@ -205,3 +223,4 @@ export default function CustomerHome() {
     </div>
   );
 }
+
