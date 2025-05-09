@@ -1,6 +1,9 @@
 import Image from "next/image";
+import { useState } from "react";
 
 const ProductCard = ({ product, onDelete, onEdit }) => {
+  const [loading, setLoading] = useState(false);
+
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
@@ -21,6 +24,75 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
       alert("Failed to delete product.");
     }
   };
+
+  const handleAddToInventory = async () => {
+  setLoading(true);
+
+  // Map possible category inputs to inventory categories
+  const categoryMap = {
+    resale: "Resale",
+    resell: "Resale",
+    recycle: "Recycle",
+    recycling: "Recycle",
+    fertilizer: "Fertilizer",
+    compost: "Fertilizer"
+  };
+
+  // Normalize and map the product's category
+  const categoryInput = (product.category || "").toLowerCase();
+  let inventoryCategory = categoryMap[categoryInput] || "Resale";
+
+  try {
+    // Try to add product to inventory
+    const res = await fetch("http://localhost:8000/inventory", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        productName: product.name,
+        category: inventoryCategory,
+        quantity: product.quantity,
+        vendorName: product.vendorName || "Vendor",
+        status: product.quantity > 0 ? "Active" : "Out of Stock",
+      }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Product added to inventory!");
+    } else if (data.message && data.message.includes("already exists")) {
+      // If already exists, update quantity
+      const invRes = await fetch("http://localhost:8000/inventory");
+      const invData = await invRes.json();
+      const invProduct = invData.inventories.find(
+        (p) => p.productName === product.name && p.category === inventoryCategory
+      );
+      if (invProduct) {
+        const updateRes = await fetch(`http://localhost:8000/inventory/${invProduct._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            quantity: invProduct.quantity + product.quantity,
+          }),
+        });
+        if (updateRes.ok) {
+          alert("Inventory updated with new quantity!");
+        } else {
+          alert("Failed to update inventory quantity.");
+        }
+      } else {
+        alert("Product exists but could not find in inventory for update.");
+      }
+    } else {
+      alert(data.message || "Failed to add to inventory.");
+    }
+  } catch (err) {
+    alert("Error adding to inventory.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md">
@@ -67,6 +139,13 @@ const ProductCard = ({ product, onDelete, onEdit }) => {
           Delete
         </button>
       </div>
+      <button
+        onClick={handleAddToInventory}
+        className="mt-2 w-full bg-green-600 text-white py-1 rounded disabled:opacity-50"
+        disabled={loading}
+      >
+        {loading ? "Adding..." : "Add to Inventory"}
+      </button>
     </div>
   );
 };

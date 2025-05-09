@@ -57,11 +57,11 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="flex flex-row overflow-hidden">
+    <div className="flex h-screen">
       <Navigation navClick={navClick} handleNavClick={handleNavClick} />
-      <div className="w-[83vw] h-[100vh] bg-gray-50">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <TopNavigation id={id} isLoggedIn={isLoggedIn} />
-        <div className="p-6">
+        <div className="flex-1 overflow-y-auto">
           {renderPage()}
         </div>
       </div>
