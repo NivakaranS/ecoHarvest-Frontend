@@ -68,11 +68,12 @@ export default function CustomerHome() {
           setUserLoggedIn(true);
   
           if (response.data.role === "Customer") setIsLoggedIn(true);
-          else router.push("/");
+          
         } catch (error) {
   
-          console.error("Error fetching cookies:", error);
-          router.push("/login");
+          setIsLoggedIn(false);
+          console.log("Error fetching cookies:", error);
+          
   
         }
       };

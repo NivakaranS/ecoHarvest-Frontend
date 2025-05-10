@@ -26,6 +26,9 @@ export default function UserManagement() {
   const [vendorPassword, setVendorPassword] = useState('')
   const [vendorUsername, setVendorUsername] = useState('')
 
+  const [vendorRegistrationSuccess, setVendorRegistrationSuccess] = useState(false)
+  const [adminRegistrationSuccess, setAdminRegistrationSuccess] = useState(false)
+
 
 
 
@@ -74,6 +77,10 @@ export default function UserManagement() {
       setGender('')
       setUsername('')
       setPassword('')
+      setAdminRegistrationSuccess(true)
+      setTimeout(() => {
+        setAdminRegistrationSuccess(false)
+      }, 3000);
 
     } catch (error) {
       console.log('Error registering admin:', error);
@@ -107,6 +114,10 @@ export default function UserManagement() {
       setVendorUsername('')
       setVendorPassword('')
       console.log('Vendor registered successfully')
+      setVendorRegistrationSuccess(true)
+      setTimeout(() => {
+        setVendorRegistrationSuccess(false)
+      }, 3000);
     } catch (error) {
       console.log('Error registering admin:', error);
     }
@@ -119,8 +130,8 @@ export default function UserManagement() {
     <div className="flex  border-t-[1px] border-gray-500 flex-row">
       <div className="w-[75%] text-black  h-[90vh] py-[20px] overflow-y-scroll px-[25px] bg-gray-100  flex flex-col">
         <p className="text-black text-[21px]">User Management System</p>
-        <div>
-          <p className="text-[25px]">Register Vendor</p>
+        <div className="bg-white text-black border-[1px] border-gray-300 rounded-[10px] pt-[20px] pb-[20px] px-[25px] mt-[10px] flex flex-col">
+          <p className="text-[35px]">Vendor Registration</p>
           <div className="flex flex-col space-y-[20px] ">
             <div>
               <p className="text-[20px]">Business Information</p>
@@ -177,6 +188,7 @@ export default function UserManagement() {
 
           </div>
         </div>
+        <p className="text-[25px] mt-[40px]">Registered Users</p>
 
         {loading ? (
           <div className="flex justify-center items-center h-full">
@@ -209,7 +221,7 @@ export default function UserManagement() {
       </div>
 
       <div className="w-[25%] py-[10px] px-[15px] h-[100vh] bg-gray-300 flex flex-col text-black">
-          <p className="text-[25px]">Register Admin</p>
+          <p className="text-[25px]">Admin Registration</p>
           <div className="mt-[5px]">
             <p className="text-[15px]">First name</p>
             <input onChange={(e) => setFirstName(e.currentTarget.value)} type="text" className="border-[1px] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
@@ -250,7 +262,12 @@ export default function UserManagement() {
             <p>Register</p>
           </div>
       </div>
-
+      {adminRegistrationSuccess && <div className="absolute bottom-0 left-0  text-black mx-[280px] opacity-[94%] my-[15px] bg-green-500 ring-green-800 ring-[1px] rounded-[5px] px-[20px] py-[15px]">
+        <p>Admin registered successfully</p>
+      </div>}
+    { vendorRegistrationSuccess &&  <div className="absolute bottom-0 left-0  text-black mx-[280px] opacity-[94%] my-[15px] bg-orange-500 ring-orange-800 ring-[1px] rounded-[5px] px-[20px] py-[15px]">
+        <p>Vendor registered successfully</p>
+      </div>}
     </div>
   
   )

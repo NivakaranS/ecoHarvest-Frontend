@@ -14,6 +14,7 @@ const ProfileManagement = ({userInformation, notifications, id}) => {
     const [password, setPassword] = useState('')
 
     const [onEditClick, setOnEditClick] = useState(false)
+    const [profileUpdateSuccess, setProfileUpdateSuccess] = useState(false)
 
     console.log('Notifications:', notifications)
 
@@ -30,6 +31,10 @@ const ProfileManagement = ({userInformation, notifications, id}) => {
             })
             console.log(response.data)
             window.location.reload()
+            setProfileUpdateSuccess(true)
+            setTimeout(() => {
+                setProfileUpdateSuccess(false)
+            }, 3000)
         } catch(err) {
             console.error("Error in updating profile: ", err)
         }
@@ -65,59 +70,95 @@ const ProfileManagement = ({userInformation, notifications, id}) => {
     <div className="border-t-[1px]  border-gray-400 text-black flex flex-row w-[100%] h-[100vh] bg-gray-100">
       <div className="flex flex-col px-[20px] py-[10px] w-[75%]">
         <p className="text-[25px]">Profile Management</p>
-        <div className="flex flex-col space-y-[20px] mt-[20px]">
-
-            <div className="flex flex-row space-x-[30px] justify-between">
-                <div className="w-[50%]">
-                    <p className="ml-[5px] text-[17px]">First name</p>
-                    {onEditClick
-                        ?<input value={firstName} onChange={(e) => setFirstName(e.currentTarget.value)} className="text-black w-[100%] outline-none ring-gray-800 ring-[0.5px] rounded-[5px] px-[10px] py-[5px]" />
-                        :<p className="pl-[10px]  text-gray-700">{userInformation[0].firstName}</p>
-                    } 
-                </div>
-                <div className="w-[50%]">
-                    <p className="ml-[5px] text-[17px]">Last name</p>
-                    {onEditClick
-                        ?<input value={lastName} onChange={(e) => setLastName(e.currentTarget.value)} className="text-black w-[100%] outline-none ring-gray-800 ring-[0.5px] rounded-[5px] px-[10px] py-[5px]" />
-                        :<p className="pl-[10px]  text-gray-700">{userInformation[0].lastName}</p>
-                    }
-                </div>
-            </div>
-            <div className="flex flex-row space-x-[30px] justify-between">
-                <div className="w-[50%]">
-                    <p className="ml-[5px] text-[17px]">Email</p>
-                    {onEditClick 
-                        ?<input value={email} onChange={(e) => setEmail(e.currentTarget.value)} className="text-black w-[100%] outline-none ring-gray-800 ring-[0.5px] rounded-[5px] px-[10px] py-[5px]" />
-                        :<p className="pl-[10px]  text-gray-700">{userInformation[0].email}</p>
-                    }
-                </div>
-                <div className="w-[50%]">
-                    <p className="ml-[5px] text-[17px]">Phone number</p>
-                    {onEditClick 
-                        ?<input value={phoneNumber} onChange={(e) => setPhoneNumber(e.currentTarget.value)} className="text-black w-[100%] outline-none ring-gray-800 ring-[0.5px] rounded-[5px] px-[10px] py-[5px]" />
-                        :<p className="pl-[10px]  text-gray-700">{userInformation[0].phoneNumber}</p>
-                    }
+        <p>Manage your account information</p>
+        <div className="flex flex-col bg-gray-200 ring-gray-500 ring-[0.5px] px-[20px] py-[15px] rounded-[10px] space-y-[10px] mt-[20px]">
+            <div>
+                <p className="text-[20px]">Personal Information</p>
+                <div className="flex flex-row space-x-[30px] justify-between">
+                    <div className="w-[50%]">
+                        <p className="ml-[5px] text-[17px]">First name</p>
+                        
+                        <input
+                            value={firstName}
+                            placeholder={userInformation[0].firstName}
+                            onChange={(e) => setFirstName(e.currentTarget.value)}
+                            disabled={!onEditClick} 
+                            className={`text-black w-[100%] outline-none ring-gray-800 ring-[0.5px] rounded-[5px] px-[10px] py-[5px]`}
+                            />
+                        
+                    </div>
+                    <div className="w-[50%]">
+                        <p className="ml-[5px] text-[17px]">Last name</p>
+                        <input
+                            value={lastName}
+                            placeholder={userInformation[0].lastName}
+                            onChange={(e) => setLastName(e.currentTarget.value)}
+                            disabled={!onEditClick} 
+                            className={`text-black w-[100%] outline-none ring-gray-800 ring-[0.5px] rounded-[5px] px-[10px] py-[5px]`}
+                            />
+                    </div>
                 </div>
             </div>
 
-            <div className="flex flex-row space-x-[30px] justify-between">
-                <div className="w-[50%]">
-                    <p  className="ml-[5px] text-[17px]">Username</p>
-                    {onEditClick 
-                        ?<input value={username} onChange={(e) => setUsername(e.currentTarget.value)} className="text-black w-[100%] outline-none ring-gray-800 ring-[0.5px] rounded-[5px] px-[10px] py-[5px]" />
-                        : <p className="pl-[10px]  text-gray-700">{userInformation[1].username}</p>
-                    }
-                </div>
-                <div className="w-[50%]">
-                    <p className="ml-[5px] text-[17px]">Password</p>
-                    {onEditClick ?
-                        <input value={password} onChange={(e) => setPassword(e.currentTarget.value)} className="text-black w-[100%] outline-none ring-gray-800 ring-[0.5px] rounded-[5px] px-[10px] py-[5px]" />
-                        :<p className="text-[15px] text-gray-700  ml-[15px] mt-[3px] ">* * * * * *</p>
-                    }
+            <div>
+                <p className="text-[20px]">Contact Information</p>
+                <div className="flex flex-row space-x-[30px] justify-between">
+                    <div className="w-[50%]">
+                        <p className="ml-[5px] text-[17px]">Email</p>
+                        
+
+                            <input
+                                value={email}
+                                placeholder={userInformation[0].email}
+                                onChange={(e) => setEmail(e.currentTarget.value)}
+                                disabled={!onEditClick} 
+                                className={`text-black w-[100%] outline-none ring-gray-800 ring-[0.5px] rounded-[5px] px-[10px] py-[5px]`}
+                            />
+                    </div>
+                    <div className="w-[50%]">
+                        <p className="ml-[5px] text-[17px]">Phone number</p>
+                    
+                        <input
+                            value={phoneNumber}
+                            placeholder={userInformation[0].phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.currentTarget.value)}
+                            disabled={!onEditClick} 
+                            className={`text-black w-[100%] outline-none ring-gray-800 ring-[0.5px] rounded-[5px] px-[10px] py-[5px]`}
+                            />
+                    </div>
                 </div>
             </div>
 
-            <div className="w-[100%] flex flex-row justify-end ">
+            <div>
+                <p className="text-[20px]">Account Information</p>
+                <div className="flex flex-row space-x-[30px] justify-between">
+                    <div className="w-[50%]">
+                        <p  className="ml-[5px] text-[17px]">Username</p>
+                    
+                        <input
+                            value={username}
+                            placeholder={userInformation[1].username}
+                            onChange={(e) => setUsername(e.currentTarget.value)}
+                            disabled={!onEditClick} 
+                            className={`text-black w-[100%] outline-none ring-gray-800 ring-[0.5px] rounded-[5px] px-[10px] py-[5px]`}
+                            />
+                    </div>
+                    <div className="w-[50%]">
+                        <p className="ml-[5px] text-[17px]">Password</p>
+                        
+
+                        <input
+                            value={password}
+                            placeholder="********"
+                            onChange={(e) => setPassword(e.currentTarget.value)}
+                            disabled={!onEditClick} 
+                            className={`text-black w-[100%] outline-none ring-gray-800 ring-[0.5px] rounded-[5px] px-[10px] py-[5px]`}
+                            />
+                    </div>
+                </div>
+            </div>
+
+            <div className="w-[100%] pt-[15px] flex flex-row justify-end ">
                 
                 {onEditClick ?
                 <div className="flex space-x-[15px] flex-row justify-end items-center">
@@ -173,6 +214,9 @@ const ProfileManagement = ({userInformation, notifications, id}) => {
           
         }
       </div>
+      {profileUpdateSuccess && <div className="absolute bottom-0 left-0  text-black mx-[280px] opacity-[94%] my-[15px] bg-green-500 ring-green-800 ring-[1px] rounded-[5px] px-[20px] py-[15px]">
+        <p>Admin profile updated successfully</p>
+      </div>}
       
     </div> 
   );
