@@ -22,14 +22,26 @@ export default function AccountManagement() {
   const [cart, setCart] = useState([]);
   const [productsDetail, setProductsDetail] = useState([]);
   const [numberOfCartItems, setNumberOfCartItems] = useState(0);
+  const [editProfile, setEditProfile] = useState(false);
 
   const router = useRouter();
+
 
 
   
   const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userInformation, setUserInformation] = useState([]);
     const [notifications, setNotifications] = useState([]);
+
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [address, setAddress] = useState("");
+    const [dateOfBirth, setDateOfBirth] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+
   
    
   
@@ -125,34 +137,73 @@ export default function AccountManagement() {
   }, [id])
 
 
+  const handleUpdateProfile = async () => {
+    try {
+      const response = await axios.post(`http://localhost:8000/customers/update`, {
+        id,
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        address,
+        dateOfBirth,
+        username,
+        password
+      });
+      console.log("Profile updated successfully:", response.data);
+      setEditProfile(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  }
+
+
   return (
     <div >
       <Navigation numberOfCartItems={numberOfCartItems} productsDetail={productsDetail} id={id} cart={cart} userLoggedIn={userLoggedIn} />
       <div className="flex flex-col items-center justify-center text-black min-h-screen bg-gray-100">
         <div className="w-[90vw] flex pb-[5vh] flex-row min-h-[90vh] mt-[18vh]">
             <div className="w-[70vw] pt-[20px]">
-                <p className="text-[30px]">Account Management</p>
+                <p className=" leading-[35px] text-[30px]">Account Management</p>
+                <p>Manage your account details</p>
                 {userInformation && userInformation.length> 0 ? <div className="pr-[30px]">
+                  <p className="text-[45px] leading-[50px]">{userInformation[2].firstName} {userInformation[2].lastName}</p>
+                  <p className="text-[13px] text-gray-500">Member since {new Date(userInformation[0].createdTimestamp).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    
+                    <div className="flex flex-row space-x-[20px] w-fit justify-between mt-[5px]">
+                      <p className="bg-yellow-500 px-[20px] py-[2px] rounded-[5px] ring-yellow-800 ring-[0.5px]">{userInformation[1].type}</p>
+                      <p className="bg-orange-500 px-[20px] py-[2px] rounded-[5px] ring-orange-800 ring-[0.5px]">{userInformation[0].role}</p>
+                      
+                    </div>
+
+                    
                     <div className="flex flex-row space-x-[20px]  justify-between mt-[20px]">
                         <div className="w-[50%]">
                             <p>First name</p>
                             <input type="text" 
+                            disabled={!editProfile}
+                            onChange={(e) => setFirstName(e.target.value)}
                             placeholder={userInformation[2].firstName}
-                            className="border-2 border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" value={userInformation[0].firstName} readOnly/>
+                            className="border-2 outline-none border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" />
                         </div>
                         <div className="w-[50%]">
                             <p>Last name</p>
-                            <input type="text" 
+                            <input type="text"
+                            onChange={(e) => setLastName(e.target.value)} 
+                            disabled={!editProfile}
                             placeholder={userInformation[2].lastName}
-                            className="border-2 border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" value={userInformation[0].lastName} readOnly/>
+                            className="border-2 outline-none border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" />
                         </div>
                     </div>
                     <div className="flex flex-row space-x-[20px]  justify-between mt-[20px]">
                         <div className="w-[50%]">
                             <p>Date of birth</p>
                             <input type="text" 
+                            onChange={(e) => setDateOfBirth(e.target.value)}
+                            disabled={!editProfile}
                             placeholder={userInformation[2].dateOfBirth}
-                            className="border-2 border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" value={userInformation[0].firstName} readOnly/>
+                            className="border-2 outline-none border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" />
                         </div>
                         
                     </div>
@@ -160,22 +211,28 @@ export default function AccountManagement() {
                         <div className="w-[50%]">
                             <p>Email</p>
                             <input type="text" 
+                            onChange={(e) => setEmail(e.target.value)}
+                            disabled={!editProfile}
                             placeholder={userInformation[2].email}
-                            className="border-2 border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" value={userInformation[0].firstName} readOnly/>
+                            className="border-2 outline-none border-gray-300 rounded-md p-2 w-[100%] mt-[5px]"  />
                         </div>
                         <div className="w-[50%]">
                             <p>Phone number</p>
-                            <input type="text" 
+                            <input type="text"
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            disabled={!editProfile} 
                             placeholder={userInformation[2].phoneNumber}
-                            className="border-2 border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" value={userInformation[0].lastName} readOnly/>
+                            className="border-2 outline-none border-gray-300 rounded-md p-2 w-[100%] mt-[5px]"  />
                         </div>
                     </div>
                     <div className="flex flex-row space-x-[20px]  justify-between mt-[20px]">
                         <div className="w-[50%]">
                             <p>Address</p>
                             <input type="text" 
+                            onChange={(e) => setAddress(e.target.value)}
+                            disabled={!editProfile}
                             placeholder={userInformation[2].address}
-                            className="border-2 border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" value={userInformation[0].firstName} readOnly/>
+                            className="border-2 outline-none border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" value={userInformation[0].firstName} />
                         </div>
                         
                     </div>
@@ -183,33 +240,68 @@ export default function AccountManagement() {
                         <div className="w-[50%]">
                             <p>Username</p>
                             <input type="text" 
+                            onChange={(e) => setUsername(e.target.value)}
+                            disabled={!editProfile}
                             placeholder={userInformation[0].username}
-                            className="border-2 border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" value={userInformation[0].firstName} readOnly/>
+                            className="border-2 outline-none border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" value={userInformation[0].firstName}/>
                         </div>
                         <div className="w-[50%]">
                             <p>Password</p>
                             <input type="text" 
+                            onChange={(e) => setPassword(e.target.value)}
                             placeholder="******"
-                            className="border-2 border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" value={userInformation[0].lastName} readOnly/>
+                            disabled={!editProfile}
+                            className="border-2 outline-none border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" value={userInformation[0].lastName} />
                         </div>
                     </div>
+                    <div>
 
-                    <p>Created timestamp {userInformation[0].createdTimestamp}</p>
-                    <p>Role {userInformation[0].role}</p>
+
+
+                      {!editProfile ? 
+                      <div className="flex flex-row space-x-[20px]  justify-end mt-[20px]">
+                        <div onClick={() => setEditProfile(true)} className=" bg-orange-500 w-fit px-[20px] py-[5px] rounded-[5px] ring-orange-800 ring-[0.5px] cursor-pointer mt-[20px]">
+                          <p>Edit Profile</p>
+                        </div> 
+                      </div>
+                      : <div className="flex flex-row space-x-[20px]  justify-end mt-[20px]">
+                          <div className="bg-gray-500 px-[20px] py-[5px] rounded-[5px] ring-gray-800 ring-[0.5px] cursor-pointer" onClick={() => setEditProfile(false)}>
+                            <p>Cancel</p>
+                          </div>
+                          <div onClick={handleUpdateProfile} className="bg-orange-500 px-[20px] py-[5px] rounded-[5px] ring-orange-800 ring-[0.5px] cursor-pointer" >
+                            <p>Confirm</p>
+                          </div>
+
+                        </div>}
+
+
+                    </div>
+
                     
-                    <p>Type {userInformation[1].type}</p>
-                    <p>Last login {userInformation[1].lastLogin}</p>
                     
-                    <p>Gender {userInformation[2].gender}</p>
              
 
                 </div> : null
 }            </div>
-            <div className="w-[30vw] h-[90vh] py-[15px] px-[25px] bg-gray-300 rounded-[15px] ring-[0.5px] ring-gray-800">
+            <div className="w-[30vw] h-[90vh] py-[15px] px-[20px] bg-gray-300 rounded-[15px] ring-[0.5px] ring-gray-800">
                 <p className="text-[20px]">Notifications</p>
+
+                {notifications && notifications.length > 0 ? <div>
+                  {  notifications.map((notification, index) => (
+                      <div key={index} className="bg-white p-[10px] rounded-[5px] mt-[10px]">
+                        <p>{notification.title}</p>
+                        <p className="text-[14px]">{notification.message}</p>
+                        <div className="flex flex-row justify-between pr-[10px]">
+                          <p className="text-gray-500 text-[12px]">{new Date(notification.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                          <p className="text-gray-500 text-[12px]">{new Date(notification.createdAt).toLocaleTimeString()}</p>
+                        </div>
+                      </div>
+                    ))}
+                </div> :
                 <div>
-                    <p>No notifications</p>
-                </div>
+                  <p>No notifications</p>
+                    
+                </div>}
 
             </div>
             
