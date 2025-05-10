@@ -1,12 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiBell, FiPlus, FiLogOut } from "react-icons/fi";
 import ProductModal from "./ProductModal";
 
 const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [vendorId, setVendorId] = useState("");
+
+  useEffect(() => {
+  const fetchVendorId = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/check-cookie", {
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.role !== "Vendor") {
+        throw new Error("Not a vendor or unauthorized");
+      }
+
+      const userId = data.id;
+      const userRes = await fetch(`http://localhost:8000/vendors/${userId}`, {
+        credentials: "include",
+      });
+      const userData = await userRes.json();
+      if (!userRes.ok || !userData[1]?.entityId) {
+        throw new Error("User entityId (vendorId) not found");
+      }
+      console.log("vendorId",userData[1].entityId);
+      setVendorId(userData[1].entityId);
+
+    } catch (err) {
+      console.error("Error fetching vendor ID:", err);
+    }
+  };
+
+  fetchVendorId();
+}, []);
+
+useEffect(() => {
+  if (vendorId) {
+    console.log("vendorId after setState:", vendorId);
+  }
+}, [vendorId]);
 
   const handleLogout = async () => {
     try {
@@ -26,7 +64,11 @@ const Navbar = () => {
   };
   
   const handleAddProduct = async (productData, resetForm) => {
-    const vendorId = "67ebdddc067a1c7f6e6eff86";
+    if (!vendorId) {
+      setToastMessage("❌ Vendor ID not found. Please try again.");
+      setTimeout(() => setToastMessage(""), 3000);
+      return;
+    }
 
     const fullProductData = {
       ...productData,

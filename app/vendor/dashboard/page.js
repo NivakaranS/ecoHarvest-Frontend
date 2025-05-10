@@ -21,10 +21,6 @@ export default function Dashboard() {
   const [role, setRole] = useState("");      
       const [userInformation, setUserInformation] = useState([]);
       const [notifications, setNotifications] = useState([]);
-    
-      
-    
-    
       
       useEffect(() => {
     
@@ -39,7 +35,7 @@ export default function Dashboard() {
     
             try {
               console.log('id', response.data.id)
-              const response2 = await axios.get('http://localhost:8000/vendors/:' + response.data.id)
+              const response2 = await axios.get('http://localhost:8000/vendors/' + response.data.id)
               console.log('vendor', response2.data);
               setUserInformation(response2.data);
     

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { FiFilter } from "react-icons/fi";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import axios from "axios";
 
 export default function OrdersPage() {
@@ -20,7 +19,11 @@ export default function OrdersPage() {
         const { id, role } = res.data;
         if (role !== "Vendor") return;
 
-        const ordersRes = await axios.get(`http://localhost:8000/orders/vendor/${id}`);
+       const vid= localStorage.getItem("vendorId");
+       console.log("vid",vid);
+
+        const ordersRes = await axios.get(`http://localhost:8000/orders/vendor/${vid}`);
+        console.log(ordersRes.data)
         setOrders(ordersRes.data);
         setLoading(false);
       } catch (err) {
@@ -74,14 +77,13 @@ export default function OrdersPage() {
                       <th className="py-2 px-4">Date</th>
                       <th className="py-2 px-4">Status</th>
                       <th className="py-2 px-4">Amount</th>
-                      <th className="py-2 px-4">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {orders.map((order) => (
+                    {orders.map((order,index) => (
                       <tr key={order._id} className="border-b">
-                        <td className="py-2 px-4">{order.orderNumber}</td>
-                        <td className="py-2 px-4">{order.customer || "N/A"}</td>
+                        <td className="py-2 px-4">{(index + 1).toString().padStart(3, '0')}</td>
+                        <td className="py-2 px-4">{order.userId?.name || "N/A"}</td>
                         <td className="py-2 px-4">
                           {new Date(order.orderTime).toLocaleDateString()}
                         </td>
@@ -103,7 +105,6 @@ export default function OrdersPage() {
                         </td>
                         <td className="py-2 px-4">
                           <button className="text-gray-600">
-                            <BsThreeDotsVertical />
                           </button>
                         </td>
                       </tr>
