@@ -27,6 +27,14 @@ const CategoryPage = () => {
   const [cart, setCart] = useState();
   const [productsDetail, setProductsDetail] = useState([]);
   const [discounts, setDiscounts] = useState();
+  const [productMinPrice, setProductMinPrice] = useState(0);
+  const [productMaxPrice, setProductMaxPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [minPrice, setMinPrice] = useState(0);
+  const [priceRangeMin, setPriceRangeMin] = useState(0);
+  const [priceRangeMax, setPriceRangeMax] = useState(0);
+  const [selectedOption, setSelectedOption] = useState("Featured");
+  const [sortedProducts, setSortedProducts] = useState([]);
 
   const router = useRouter();
 
@@ -44,7 +52,10 @@ const CategoryPage = () => {
         setId(response.data.id);
         setRole(response.data.role);
 
-        if (response.data.role === "Customer" || "Company") {
+        if (
+          response.data.role === "Customer" ||
+          response.data.role === "Company"
+        ) {
           setUserLoggedIn(true);
         } else if (response.data.role === "Vendor") {
           router.push("/vendor");
@@ -88,6 +99,7 @@ const CategoryPage = () => {
         selectRef.current.options[selectRef.current.selectedIndex].text;
       textRef.current.innerText = selectedText;
       setWidth(textRef.current.offsetWidth + 20);
+      setSelectedOption(selectedText);
     }
   };
 
@@ -109,6 +121,14 @@ const CategoryPage = () => {
 
         setProducts(response.data);
         console.log(products);
+        const prices = response.data.map((product) => product.unitPrice || 0);
+        const max = Math.max(...prices);
+        const min = Math.min(...prices);
+
+        setMaxPrice(max);
+        setMinPrice(min);
+        setPriceRangeMin(min);
+        setPriceRangeMax(max);
       } catch (error) {
         setUserLoggedIn(false);
       } finally {
@@ -118,7 +138,46 @@ const CategoryPage = () => {
 
     fetchProducts();
   }, []);
+  useEffect(() => {
+    const sortProducts = () => {
+      // Filter products based on price range
+      const filteredProducts = products.filter(
+        (product) =>
+          product.unitPrice >= priceRangeMin &&
+          product.unitPrice <= priceRangeMax
+      );
 
+      // Sorting logic
+      const sorted = [...filteredProducts];
+
+      switch (selectedOption) {
+        case "Price: Low to High":
+          sorted.sort((a, b) => a.unitPrice - b.unitPrice);
+          break;
+        case "Price: High to Low":
+          sorted.sort((a, b) => b.unitPrice - a.unitPrice);
+          break;
+        case "Highly Rated":
+          sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+          break;
+        // case "Most Popular":
+        //   sorted.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+        //   break;
+        // // case "Newest Arrivals":
+        // //   sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        // //   break;
+        // // case "Best Sellers":
+        // //   sorted.sort((a, b) => (b.sales || 0) - (a.sales || 0));
+        // //   break;
+        default:
+          break;
+      }
+
+      setSortedProducts(sorted);
+    };
+
+    sortProducts();
+  }, [selectedOption, products, priceRangeMin, priceRangeMax]);
   useEffect(() => {
     const fetchDiscounts = async () => {
       try {
@@ -204,13 +263,37 @@ const CategoryPage = () => {
                   <p>Price</p>
                   <div>
                     <input
-                      className="w-[150%] accent-[#FDAA1C] h-[5px]  focus:outline-none cursor-pointer "
                       type="range"
+                      min={minPrice}
+                      max={priceRangeMax - 1}
+                      value={priceRangeMin}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        if (value < priceRangeMax) setPriceRangeMin(value);
+                      }}
+                      className="w-[130%] accent-[#FDAA1C] h-[5px] focus:outline-none cursor-pointer"
                     />
-                    <div className="flex flex-row justify-between w-[150%] text-[13px]">
-                      <p>Rs. 0</p>
-                      <p>Rs.500</p>
+                    <div className="flex flex-row justify-between w-[130%] text-[13px]">
+                      <p>Min: Rs.{priceRangeMin}</p>
+                      <p>Max: Rs.{priceRangeMax}</p>
                     </div>
+                  </div>
+                  <div className="pt-[6px]">
+                    <input
+                      type="range"
+                      min={priceRangeMin + 1}
+                      max={maxPrice}
+                      value={priceRangeMax}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        if (value > priceRangeMin) setPriceRangeMax(value);
+                      }}
+                      className="w-[130%] accent-[#FDAA1C] h-[5px] focus:outline-none cursor-pointer"
+                    />
+                    {/* <div className="flex flex-row justify-between w-[150%] text-[13px]">
+                      <p>Min: Rs.{priceRangeMin}</p>
+                      <p>Max: Rs.{priceRangeMax}</p>
+                    </div> */}
                   </div>
                 </div>
                 <div className="flex text-[15px] flex-col leading-[20px]">
@@ -294,9 +377,9 @@ const CategoryPage = () => {
                     <option>Price: Low to High</option>
                     <option>Price: High to Low</option>
                     <option>Highly Rated</option>
-                    <option>Most Popular</option>
+                    {/* <option>Most Popular</option>
                     <option>Newest Arrivals</option>
-                    <option>Best Sellers</option>
+                    <option>Best Sellers</option> */}
                   </select>
                 </div>
               </div>
@@ -306,7 +389,7 @@ const CategoryPage = () => {
               <div className="grid w-[100%]   gap-[5px] grid-cols-5">
                 {console.log("products", products)}
                 {console.log("role", role)}
-                {products
+                {sortedProducts
                   .filter(({ category }) => {
                     let cate = "";
                     if (role === "Company") {
@@ -333,6 +416,7 @@ const CategoryPage = () => {
           </div>
         </div>
       </div>
+
       <Max />
       <Footer />
     </div>
