@@ -5,37 +5,63 @@ import axios from "axios";
 
 const RecentOrders = () => {
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [vendorId, setVendorId] = useState(null);
 
   useEffect(() => {
-    const fetchVendorOrders = async () => {
+  const fetchVendorId = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/check-cookie", {
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.role !== "Vendor") {
+        throw new Error("Not a vendor or unauthorized");
+      }
+
+      const userId = data.id;
+      const userRes = await fetch(`http://localhost:8000/vendors/${userId}`, {
+        credentials: "include",
+      });
+      const userData = await userRes.json();
+      if (!userRes.ok || !userData[1]?.entityId) {
+        throw new Error("User entityId (vendorId) not found");
+      }
+      console.log("vendorId",userData[1].entityId);
+      setVendorId(userData[1].entityId);
+
+    } catch (err) {
+      console.error("Error fetching vendor ID:", err);
+    }
+  };
+
+  fetchVendorId();
+}, []);
+
+   useEffect(() => {
+    const fetchOrders = async () => {
+      if (!vendorId) return;
+
       try {
-        const res = await axios.get("http://localhost:8000/check-cookie/", {
+        const ordersRes = await axios.get(`http://localhost:8000/orders/vendor/${vendorId}`, {
           withCredentials: true,
         });
-
-        const { id, role } = res.data;
-
-        if (role !== "Vendor") return;
-
-        const ordersRes = await axios.get(`http://localhost:8000/orders/vendor/${id}`);
         setOrders(ordersRes.data);
-        setLoading(false);
+        console.log("orders", ordersRes.data);
       } catch (err) {
-        console.error("Failed to load vendor orders", err);
-        setLoading(false);
+        console.error("Error fetching vendor orders:", err);
       }
     };
 
-    fetchVendorOrders();
-  }, []);
+    fetchOrders();
+  }, [vendorId]);
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md">
       <h3 className="text-lg font-bold mb-3">Recent Orders</h3>
 
-      {loading ? (
-        <p>Loading orders...</p>
+      {orders.length === 0 ? (
+        <p>No recent orders found.</p>
       ) : (
         <table className="w-full text-left">
           <thead>
@@ -48,9 +74,9 @@ const RecentOrders = () => {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {orders.map((order, index) => (
               <tr key={order._id} className="border-b">
-                <td className="p-2">{order.orderNumber}</td>
+                <td className="p-2">{(index + 1).toString().padStart(3, '0')}</td>
                 <td>
                   {order.products.map((p, idx) => (
                     <div key={idx}>{p.productId?.name || "Unnamed Product"}</div>
