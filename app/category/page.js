@@ -25,8 +25,22 @@ const CategoryPage = () => {
     const [id, setId] = useState('');
   const [role, setRole] = useState('');
   const [userLoggedIn, setUserLoggedIn] = useState(false);
+<<<<<<< HEAD
     const [cart, setCart] = useState();
     const [productsDetail, setProductsDetail] = useState([]);
+=======
+  const [cart, setCart] = useState();
+  const [productsDetail, setProductsDetail] = useState([]);
+  const [discounts, setDiscounts] = useState();
+  const [productMinPrice, setProductMinPrice] = useState(0);
+  const [productMaxPrice, setProductMaxPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [minPrice, setMinPrice] = useState(0);
+  const [priceRangeMin, setPriceRangeMin] = useState(0);
+  const [priceRangeMax, setPriceRangeMax] = useState(0);
+  const [selectedOption, setSelectedOption] = useState("Featured");
+  const [sortedProducts, setSortedProducts] = useState([]);
+>>>>>>> a9eed528cf63128a3b860c206ef1b12d9eb37915
 
   const router = useRouter();
 
@@ -43,11 +57,23 @@ const CategoryPage = () => {
         setId(response.data.id);
         setRole(response.data.role);
 
+<<<<<<< HEAD
         if(response.data.role === 'Customer') {
           
           setUserLoggedIn(true)
           
 
+=======
+        if (
+          response.data.role === "Customer" ||
+          response.data.role === "Company"
+        ) {
+          setUserLoggedIn(true);
+        } else if (response.data.role === "Vendor") {
+          router.push("/vendor");
+        } else if (response.data.role === "Admin") {
+          router.push("/admin");
+>>>>>>> a9eed528cf63128a3b860c206ef1b12d9eb37915
         }
         else if(response.data.role === 'Vendor') {
           
@@ -87,6 +113,7 @@ const CategoryPage = () => {
 
     fetchCart();
 
+<<<<<<< HEAD
   }, [id])
    
 
@@ -98,6 +125,15 @@ const CategoryPage = () => {
             textRef.current.innerText = selectedText;
             setWidth(textRef.current.offsetWidth + 20)
         }
+=======
+  const updateWidth = () => {
+    if (selectRef.current && textRef.current) {
+      const selectedText =
+        selectRef.current.options[selectRef.current.selectedIndex].text;
+      textRef.current.innerText = selectedText;
+      setWidth(textRef.current.offsetWidth + 20);
+      setSelectedOption(selectedText);
+>>>>>>> a9eed528cf63128a3b860c206ef1b12d9eb37915
     }
 
     useEffect(() => {
@@ -115,6 +151,7 @@ const CategoryPage = () => {
         const fetchProducts = async () => {
             try {
 
+<<<<<<< HEAD
                 
                 
                 const response = await axios.get("http://localhost:8000/products/category/" + categoryId );
@@ -131,6 +168,79 @@ const CategoryPage = () => {
 
         fetchProducts();
     })
+=======
+        setProducts(response.data);
+        console.log(products);
+        const prices = response.data.map((product) => product.unitPrice || 0);
+        const max = Math.max(...prices);
+        const min = Math.min(...prices);
+
+        setMaxPrice(max);
+        setMinPrice(min);
+        setPriceRangeMin(min);
+        setPriceRangeMax(max);
+      } catch (error) {
+        setUserLoggedIn(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+  useEffect(() => {
+    const sortProducts = () => {
+      // Filter products based on price range
+      const filteredProducts = products.filter(
+        (product) =>
+          product.unitPrice >= priceRangeMin &&
+          product.unitPrice <= priceRangeMax
+      );
+
+      // Sorting logic
+      const sorted = [...filteredProducts];
+
+      switch (selectedOption) {
+        case "Price: Low to High":
+          sorted.sort((a, b) => a.unitPrice - b.unitPrice);
+          break;
+        case "Price: High to Low":
+          sorted.sort((a, b) => b.unitPrice - a.unitPrice);
+          break;
+        case "Highly Rated":
+          sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+          break;
+        // case "Most Popular":
+        //   sorted.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+        //   break;
+        // // case "Newest Arrivals":
+        // //   sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        // //   break;
+        // // case "Best Sellers":
+        // //   sorted.sort((a, b) => (b.sales || 0) - (a.sales || 0));
+        // //   break;
+        default:
+          break;
+      }
+
+      setSortedProducts(sorted);
+    };
+
+    sortProducts();
+  }, [selectedOption, products, priceRangeMin, priceRangeMax]);
+  useEffect(() => {
+    const fetchDiscounts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/discount/");
+        setDiscounts(response.data);
+        console.log("discounts", response.data);
+      } catch (error) {
+        console.error("Error fetching discounts", error);
+      }
+    };
+    fetchDiscounts();
+  }, []);
+>>>>>>> a9eed528cf63128a3b860c206ef1b12d9eb37915
 
 
 
@@ -269,11 +379,211 @@ const CategoryPage = () => {
                         </div>
                     </div>
                 </div>
+<<<<<<< HEAD
             </div>
             <Max/>
             <Footer/>
         </div>
     )
 }
+=======
+
+                <div className="flex text-[15px] flex-col leading-[20px]">
+                  <p className="text-[18px] text-gray-800">Flavour</p>
+                  <div className="flex pl-[5px] pb-[10px] pt-[2px] flex-col leading-[20px]">
+                    <div className="flex flex-row space-x-[2px]">
+                      <input
+                        className="cursor-pointer accent-[#FDAA1C] "
+                        type="checkbox"
+                      />
+                      <p>Mango Passion</p>
+                    </div>
+                    <div className="flex flex-row space-x-[2px]">
+                      <input
+                        className="cursor-pointer accent-[#FDAA1C]"
+                        type="checkbox"
+                      />
+                      <p>Mango Passion</p>
+                    </div>
+                    <div className="flex flex-row space-x-[2px]">
+                      <input
+                        className="cursor-pointer accent-[#FDAA1C]"
+                        type="checkbox"
+                      />
+                      <p>Mango Passion</p>
+                    </div>
+                    <div className="flex flex-row space-x-[2px]">
+                      <input
+                        className="cursor-pointer accent-[#FDAA1C]"
+                        type="checkbox"
+                      />
+                      <p>Mango Passion</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="pb-[10px]">
+                  <p>Price</p>
+                  <div>
+                    <input
+                      type="range"
+                      min={minPrice}
+                      max={priceRangeMax - 1}
+                      value={priceRangeMin}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        if (value < priceRangeMax) setPriceRangeMin(value);
+                      }}
+                      className="w-[130%] accent-[#FDAA1C] h-[5px] focus:outline-none cursor-pointer"
+                    />
+                    <div className="flex flex-row justify-between w-[130%] text-[13px]">
+                      <p>Min: Rs.{priceRangeMin}</p>
+                      <p>Max: Rs.{priceRangeMax}</p>
+                    </div>
+                  </div>
+                  <div className="pt-[6px]">
+                    <input
+                      type="range"
+                      min={priceRangeMin + 1}
+                      max={maxPrice}
+                      value={priceRangeMax}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        if (value > priceRangeMin) setPriceRangeMax(value);
+                      }}
+                      className="w-[130%] accent-[#FDAA1C] h-[5px] focus:outline-none cursor-pointer"
+                    />
+                    {/* <div className="flex flex-row justify-between w-[150%] text-[13px]">
+                      <p>Min: Rs.{priceRangeMin}</p>
+                      <p>Max: Rs.{priceRangeMax}</p>
+                    </div> */}
+                  </div>
+                </div>
+                <div className="flex text-[15px] flex-col leading-[20px]">
+                  <p className="text-[17px] ">Brands</p>
+                  <div className="flex pl-[5px] pb-[10px] pt-[2px] flex-col leading-[20px]">
+                    <div className="flex flex-row space-x-[2px]">
+                      <input className="cursor-pointer " type="checkbox" />
+                      <p>Anchor</p>
+                    </div>
+                    <div className="flex flex-row space-x-[2px]">
+                      <input className="cursor-pointer" type="checkbox" />
+                      <p>Nestle</p>
+                    </div>
+                    <div className="flex flex-row space-x-[2px]">
+                      <input className="cursor-pointer" type="checkbox" />
+                      <p>Ambewela</p>
+                    </div>
+                    <div className="flex flex-row space-x-[2px]">
+                      <input className="cursor-pointer" type="checkbox" />
+                      <p>Elephant house</p>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <p>Customer Reviews</p>
+                  <div className="flex flex-row space-x-[3px]">
+                    <Image
+                      className="cursor-pointer"
+                      alt="star"
+                      src={Star}
+                      height={15}
+                    />
+                    <Image
+                      className="cursor-pointer"
+                      alt="star"
+                      src={Star}
+                      height={15}
+                    />
+                    <Image
+                      className="cursor-pointer"
+                      alt="star"
+                      src={Star}
+                      height={15}
+                    />
+                    <Image
+                      className="cursor-pointer"
+                      alt="star"
+                      src={Star}
+                      height={15}
+                    />
+                    <Image
+                      className="cursor-pointer"
+                      alt="star"
+                      src={Star}
+                      height={15}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="w-[84%] min-h-[100vh] border-l-[1px]  border-gray-600  px-[20px]">
+            <div className="bg-gray-200 flex flex-row justify-between items-center  rounded-[5px] text-[15px] py-[5px] my-[5px] ring-[0.5px] ring-gray-600 px-[10px]">
+              <p>1-20 of over 100 results for {categoryName}</p>
+              <div className="flex flex-row text-[13px] items-center ">
+                <p>Sort by: </p>
+                <div className="relative">
+                  <span
+                    ref={textRef}
+                    className="absolute right-0 opacity-0 pointer-events-none z-[20]  whitespace-nowrap"
+                  >
+                    Featured
+                  </span>
+                  <select
+                    ref={selectRef}
+                    onChange={updateWidth}
+                    style={{ width }}
+                    className="focus:outline-none z-[30] cursor-pointer bg-transparent border-none"
+                  >
+                    <option>Featured</option>
+                    <option>Price: Low to High</option>
+                    <option>Price: High to Low</option>
+                    <option>Highly Rated</option>
+                    {/* <option>Most Popular</option>
+                    <option>Newest Arrivals</option>
+                    <option>Best Sellers</option> */}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <p className="text-[30px]">Results for {categoryName}</p>
+            <div className="w-[100%]  px-[5px] mx-[10px] flex items-center justify-center">
+              <div className="grid w-[100%]   gap-[5px] grid-cols-5">
+                {console.log("products", products)}
+                {console.log("role", role)}
+                {sortedProducts
+                  .filter(({ category }) => {
+                    let cate = "";
+                    if (role === "Company") {
+                      cate = "Recycling";
+                    } else if (role === "Customer") {
+                      cate = "Resell";
+                    }
+                    return cate === category;
+                  })
+                  .map((product, index) => (
+                    <div key={index}>
+                      <Product
+                        id={product._id}
+                        title={product.name}
+                        imageUrl={product.imageUrl}
+                        subtitle={product.subtitle}
+                        unitPrice={product.unitPrice}
+                        discounts={discounts}
+                      />
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Max />
+      <Footer />
+    </div>
+  );
+};
+>>>>>>> a9eed528cf63128a3b860c206ef1b12d9eb37915
 
 export default CategoryPage

@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import Select from "react-select";
+import Swal from "sweetalert2";
 export default function Discount() {
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [selectedProductId, setSelectedProductId] = useState("");
@@ -92,10 +94,31 @@ export default function Discount() {
   const handleSubmit = async () => {
     try {
       const errors = [];
+      const existingDiscount = discounts.find(
+        (discount) =>
+          discount.productId._id === selectedProductId &&
+          discount.status === true
+      );
 
-      if (!selectedProductId) errors.push("Please select a product.");
-      if (discountPercentage <= 0 || discountPercentage > 100)
-        errors.push("Discount percentage must be between 1 and 100.");
+      if (existingDiscount)
+        return Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "This product already has an active discount.",
+        });
+
+      if (!selectedProductId)
+        return Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "product isn't selected.",
+        });
+      if (discountPercentage <= 0 || discountPercentage >= 100)
+        return Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Discount percenetage should be between 1 to 99.",
+        });
       if (status !== true && status !== false)
         errors.push("Please select a status.");
       // if (!isConfirmed) errors.push("Please confirm the information provided.");
@@ -117,10 +140,18 @@ export default function Discount() {
         }
       );
       console.log("Submitted:", response.data);
-      alert("Discount added successfully");
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Discount added successfully!",
+      });
     } catch (err) {
       console.error("Error submitting:", err);
-      alert("discount adding is failure");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
     }
   };
   const handleDelete = async (id) => {
@@ -131,7 +162,11 @@ export default function Discount() {
       if (!confirmDelete) return;
 
       await axios.delete(`http://localhost:8000/api/discount/delete/${id}`);
-      alert("Discount deleted successfully.");
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Discount deleted successfully!",
+      });
 
       setDiscounts(discounts.filter((discount) => discount._id !== id));
     } catch (error) {
@@ -155,7 +190,11 @@ export default function Discount() {
         }
       );
 
-      alert("Discount updated successfully");
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Discount Updated successfully!",
+      });
 
       setDiscounts((prev) =>
         prev.map((item) =>
@@ -181,22 +220,28 @@ export default function Discount() {
         <div className="flex flex-col mb-[15px] space-y-[5px]">
           <p className="text-[20px] mb-8">
             Available Product
-            <select
-              onChange={(e) => {
-                setSelectedProductId(e.target.value);
+            <Select
+              options={products.map((product) => ({
+                value: product._id,
+                label: product.name,
+              }))}
+              onChange={(selectedOption) => {
+                setSelectedProductId(
+                  selectedOption ? selectedOption.value : ""
+                );
               }}
-              value={selectedProductId}
-              className="border p-2 rounded w-full mt-4"
-            >
-              <option value="" className="text-[15px]">
-                Select a product
-              </option>
-              {products.map((product) => (
-                <option key={product._id} value={product._id}>
-                  {product.name}
-                </option>
-              ))}
-            </select>
+              value={
+                products
+                  .map((product) => ({
+                    value: product._id,
+                    label: product.name,
+                  }))
+                  .find((option) => option.value === selectedProductId) || null
+              }
+              placeholder="Select a product..."
+              isClearable
+              className="w-full"
+            />
           </p>
         </div>
         <div className="flex flex-col  space-y-[2px]">
