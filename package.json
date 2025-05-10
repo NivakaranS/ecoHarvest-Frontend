@@ -22,6 +22,7 @@
     "react-select": "^5.10.1",
     "react-sortablejs": "^6.1.4",
     "socket.io-client": "^4.8.1",
+    "sweetalert2": "^11.21.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
