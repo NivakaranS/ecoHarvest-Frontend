@@ -23,6 +23,7 @@ export default function AccountManagement() {
   const [productsDetail, setProductsDetail] = useState([]);
   const [numberOfCartItems, setNumberOfCartItems] = useState(0);
   const [editProfile, setEditProfile] = useState(false);
+  const [error, setError] = useState('');
 
   const router = useRouter();
 
@@ -138,6 +139,21 @@ export default function AccountManagement() {
 
 
   const handleUpdateProfile = async () => {
+    if (phoneNumber) {
+      if(phoneNumber.length < 10 || phoneNumber.length > 10) {
+        setError("Phone number must be 10 digits");
+        return;
+      }
+    }
+
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setError("Invalid email format");
+        return;
+      }
+    }
+
     try {
       const response = await axios.post(`http://localhost:8000/customers/update`, {
         id,
@@ -157,6 +173,17 @@ export default function AccountManagement() {
       console.error("Error updating profile:", error);
     }
   }
+
+
+     const handleDeleteNotification = async (notificationId) => {
+          try {
+              const response = await axios.delete(`http://localhost:8000/notification/:${notificationId}`)
+              console.log(response.data)
+              window.location.reload()
+          } catch(err) {
+              console.error("Error in deleting notification: ", err)
+          }
+      }
 
 
   return (
@@ -254,7 +281,11 @@ export default function AccountManagement() {
                             className="border-2 outline-none border-gray-300 rounded-md p-2 w-[100%] mt-[5px]" value={userInformation[0].lastName} />
                         </div>
                     </div>
-                    <div>
+                    <div className="flex flex-row space-x-[20px]  justify-between mt-[20px]"> 
+                      <div className="flex flex-col">
+                      {error && <p style={{ color: "red" }}>{error}</p>}
+
+                      </div>
 
 
 
@@ -289,8 +320,15 @@ export default function AccountManagement() {
                 {notifications && notifications.length > 0 ? <div>
                   {  notifications.map((notification, index) => (
                       <div key={index} className="bg-white p-[10px] rounded-[5px] mt-[10px]">
-                        <p>{notification.title}</p>
-                        <p className="text-[14px]">{notification.message}</p>
+                        <div className="flex flex-row justify-between">
+                          <div>
+                            <p>{notification.title}</p>
+                            <p className="text-[14px]">{notification.message}</p>
+                          </div>
+                          <div className="bg-gray-200 rounded-full text-[12px] ring-gray-800 ring-[0.5px] w-[20px] h-[20px] flex items-center justify-center cursor-pointer" onClick={() => handleDeleteNotification(notification._id)}>
+                            <p>X</p>
+                          </div>
+                        </div>
                         <div className="flex flex-row justify-between pr-[10px]">
                           <p className="text-gray-500 text-[12px]">{new Date(notification.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                           <p className="text-gray-500 text-[12px]">{new Date(notification.createdAt).toLocaleTimeString()}</p>

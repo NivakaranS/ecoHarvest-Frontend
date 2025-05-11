@@ -360,7 +360,7 @@ const CartPage = () => {
 
 
                 isFixed ? "fixed w-[30%]" : " static w-[100%]  "
-              } py-[10px] px-[20px] rounded-[15px] ring-[0.5px]  bg-gray-300 h-[80%] `}
+              } py-[10px] px-[20px] rounded-[15px] ring-[0.5px]  bg-gray-300 h-[50%] `}
 
 
             >
@@ -379,15 +379,7 @@ const CartPage = () => {
                 </div>
               </div>
               <div className="h-[0.5px] w-[100%] bg-black"></div>
-              <div className="flex flex-row justify-between my-[18px]">
-                <input
-                  className="border-[0.5px] w-[250px] rounded-[5px] px-[10px] focus:outline-none "
-                  placeholder="Enter coupon number"
-                />
-                <div className="bg-gray-500 rounded-[5px] py-[5px] px-[10px] text-[15px] cursor-pointer flex items-center justify-center">
-                  <p>Apply Coupon</p>
-                </div>
-              </div>
+             
               <div className="h-[0.5px] w-[100%] bg-black"></div>
               <div>
                 
@@ -396,6 +388,9 @@ const CartPage = () => {
                   <p>Rs. {cart.totalAmount}</p>
                 </div>
               </div>
+              <div className="h-[0.5px] mt-[15px] w-[100%] bg-black"></div>
+             
+             <div className="h-[0.5px] w-[100%] bg-black"></div>
               <div className="flex flex-col space-y-[10px] mt-[20px]">
 
                 <div onClick={handleCheckout} className="bg-gray-500 rounded-[10px] py-[10px] cursor-pointer flex items-center justify-center ">

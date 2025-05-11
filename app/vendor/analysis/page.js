@@ -3,22 +3,25 @@
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { FiArrowRight } from "react-icons/fi";
-import {jsPDF} from "jspdf";
+import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export function generateSalesReport(data) {
   const doc = new jsPDF("l", "pt", "a4");
 
   autoTable(doc, {
     head: [["Order #", "Order Date", "Status", "Total Amount"]],
-    body: data.map(order => [
+    body: data.map((order) => [
       order.orderNumber,
       new Date(order.orderTime).toLocaleString(),
       order.status,
-      order.totalAmount
+      order.totalAmount,
     ]),
     startY: 30,
-    theme: "grid"
+    theme: "grid",
   });
 
   doc.save("Sales_Report.pdf");
@@ -28,41 +31,134 @@ export function generateProductReport(data) {
   const doc = new jsPDF("l", "pt", "a4");
 
   autoTable(doc, {
-  head: [["Name", "Category", "Stock", "Unit Price", "MRP", "Status"]],
-  body: data.map(product => [
-    product.name,
-    product.category,
-    product.quantity,
-    product.unitPrice,
-    product.MRP,
-    product.status
-  ]),
+    head: [["Name", "Category", "Stock", "Unit Price", "MRP", "Status"]],
+    body: data.map((product) => [
+      product.name,
+      product.category,
+      product.quantity,
+      product.unitPrice,
+      product.MRP,
+      product.status,
+    ]),
     startY: 50,
-    theme: "grid"
+    theme: "grid",
   });
 
   doc.save("Product_Report.pdf");
 }
 
-const handleSalesReport = async () => {
-  const response = await fetch('/vendor/api/orders');
-  const data = await response.json();
-  generateSalesReport(data);
-};
-
-const handleProductReport = async () => {
-  const response = await fetch('/vendor//api/products');
-  const data = await response.json();
-  generateProductReport(data);
-};
-
 export default function Analytics() {
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [id, setId] = useState(null);
+  const [role, setRole] = useState("");
+  const [userInformation, setUserInformation] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCookies = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/check-cookie/", {
+          withCredentials: true,
+        });
+
+        setId(response.data.id);
+        setRole(response.data.role);
+
+        try {
+          const response2 = await axios.get(
+            `http://localhost:8000/vendors/${response.data.id}`
+          );
+          setUserInformation(response2.data);
+        } catch (err) {
+          console.error("Error fetching user information:", err);
+          setError("Failed to fetch user information");
+        }
+
+        try {
+          const response3 = await axios.get(
+            `http://localhost:8000/notification/${response.data.id}`
+          );
+          setNotifications(response3.data || []); // Ensure notifications is an array
+        } catch (err) {
+          console.error("Error fetching notifications:", err);
+          setError("Failed to fetch notifications");
+          setNotifications([]); // Fallback to empty array
+        }
+
+        if (response.data.role === "Vendor") {
+          setIsLoggedIn(true);
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("Error fetching cookies:", error);
+        router.push("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCookies();
+  }, [router]);
+
+  const handleSalesReport = async () => {
+    try {
+      const response = await fetch("/vendor/api/orders", {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch orders: ${response.statusText}`);
+      }
+      const data = await response.json();
+      generateSalesReport(data);
+    } catch (err) {
+      console.error("Error generating sales report:", err);
+      setError("Failed to generate sales report");
+    }
+  };
+
+  const handleProductReport = async () => {
+    try {
+      const response = await fetch("/vendor/api/products", {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch products: ${response.statusText}`);
+      }
+      const data = await response.json();
+      generateProductReport(data);
+    } catch (err) {
+      console.error("Error generating product report:", err);
+      setError("Failed to generate product report");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-gray-100 justify-center items-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return null; // Router handles redirection
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
       <div className="flex-1">
-        <Navbar />
+        <Navbar notifications={notifications || []} id={id} />
         <div className="p-6">
+          {error && (
+            <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+              {error}
+            </div>
+          )}
           <h1 className="text-2xl font-bold mb-1">Analytics Dashboard</h1>
           <p className="text-gray-600 mb-6">Generate and view your business reports</p>
 
@@ -76,7 +172,10 @@ export default function Analytics() {
                 <li>Customer insights</li>
                 <li>Payment analytics</li>
               </ul>
-              <button onClick = {handleSalesReport} className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 rounded inline-flex items-center">
+              <button
+                onClick={handleSalesReport}
+                className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 rounded inline-flex items-center"
+              >
                 Generate Report <FiArrowRight className="ml-2" />
               </button>
             </div>
@@ -90,7 +189,10 @@ export default function Analytics() {
                 <li>Category analysis</li>
                 <li>Expiry tracking</li>
               </ul>
-              <button onClick = {handleProductReport} className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 rounded inline-flex items-center">
+              <button
+                onClick={handleProductReport}
+                className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 rounded inline-flex items-center"
+              >
                 Generate Report <FiArrowRight className="ml-2" />
               </button>
             </div>

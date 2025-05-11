@@ -5,10 +5,67 @@ import Navbar from "../components/Navbar";
 import { FiFilter } from "react-icons/fi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter(); 
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [id, setId] = useState(null);
+    const [role, setRole] = useState("");      
+        const [userInformation, setUserInformation] = useState([]);
+        const [notifications, setNotifications] = useState([]);
+      
+        
+      
+      
+        
+        useEffect(() => {
+      
+          const fetchCookies = async () => {
+            try {
+              const response = await axios.get(
+                "http://localhost:8000/check-cookie/",
+                {
+                  withCredentials: true,
+                }
+              );
+      
+              try {
+                console.log('id', response.data.id)
+                const response2 = await axios.get('http://localhost:8000/vendors/:' + response.data.id)
+                console.log('vendor', response2.data);
+                setUserInformation(response2.data);
+      
+                try {
+                  const response3 = await axios.get('http://localhost:8000/notification/:' + response.data.id)
+                  console.log('notifications', response3.data);
+                  setNotifications(response3.data);
+                } catch(err) {
+                  console.error("Error in fetching notifications: ", err)
+                }
+              } catch(err) {
+                console.error("Error in fetching user information: ", err)
+              }
+              
+      
+              setId(response.data.id);
+              setRole(response.data.role);
+      
+              if (response.data.role === "Vendor") setIsLoggedIn(true);
+              else router.push("/");
+            } catch (error) {
+      
+              console.error("Error fetching cookies:", error);
+              router.push("/login");
+      
+            }
+          };
+      
+          fetchCookies();
+      
+        }, [])
 
   useEffect(() => {
     const fetchVendorOrders = async () => {
@@ -36,7 +93,7 @@ export default function OrdersPage() {
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <Navbar />
+      <Navbar notifications={notifications} id={id} />
         <div className="p-6">
           <h2 className="text-2xl font-semibold">Orders</h2>
           <p className="text-gray-600">Manage and track all your orders</p>

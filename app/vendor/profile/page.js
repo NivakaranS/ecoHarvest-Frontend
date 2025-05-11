@@ -195,7 +195,7 @@ export default function ProfilePage() {
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <Navbar />
+        <Navbar notifications={notifications} id={id} />
         <div className="flex flex-col px-8 py-6">
           <h2 className="text-2xl font-semibold">Profile Details</h2>
           <p className="text-gray-600">Manage your account information</p>

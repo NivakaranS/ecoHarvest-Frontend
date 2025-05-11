@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
 import EditProductModal from "../components/EditProductModal";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Products() {
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -17,6 +18,63 @@ export default function Products() {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [productCategories, setProductCategories] = useState([]);
   const productsPerPage = 4;
+
+  const router = useRouter(); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [id, setId] = useState(null);
+  const [role, setRole] = useState("");      
+      const [userInformation, setUserInformation] = useState([]);
+      const [notifications, setNotifications] = useState([]);
+    
+      
+    
+    
+      
+      useEffect(() => {
+    
+        const fetchCookies = async () => {
+          try {
+            const response = await axios.get(
+              "http://localhost:8000/check-cookie/",
+              {
+                withCredentials: true,
+              }
+            );
+    
+            try {
+              console.log('id', response.data.id)
+              const response2 = await axios.get('http://localhost:8000/vendors/:' + response.data.id)
+              console.log('vendor', response2.data);
+              setUserInformation(response2.data);
+    
+              try {
+                const response3 = await axios.get('http://localhost:8000/notification/:' + response.data.id)
+                console.log('notifications', response3.data);
+                setNotifications(response3.data);
+              } catch(err) {
+                console.error("Error in fetching notifications: ", err)
+              }
+            } catch(err) {
+              console.error("Error in fetching user information: ", err)
+            }
+            
+    
+            setId(response.data.id);
+            setRole(response.data.role);
+    
+            if (response.data.role === "Vendor") setIsLoggedIn(true);
+            else router.push("/");
+          } catch (error) {
+    
+            console.error("Error fetching cookies:", error);
+            router.push("/login");
+    
+          }
+        };
+    
+        fetchCookies();
+    
+      }, [])
   
   const handleProductUpdate = (updatedProduct) => {
     setProducts((prev) =>
@@ -68,7 +126,7 @@ export default function Products() {
     <div className="flex">
       <Sidebar />
       <div className="flex-1 p-6 bg-gray-100">
-        <Navbar />
+      <Navbar notifications={notifications} id={id} />
 
         <div className="flex justify-between items-center my-4">
           <h2 className="text-2xl font-bold">Products</h2>

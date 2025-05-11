@@ -96,7 +96,7 @@ const Login = () => {
 
   const handleIndividualRegistration = async () => {
     if (regPassword !== regRepeatPassword) {
-      alert("Passwords do not match");
+      setError("Passwords do not match");
       return;
     }
 
@@ -144,7 +144,7 @@ const Login = () => {
 
   const handleBusinessRegistration = async () => {
     if (comPassword !== comRepeatPassword) {
-      alert("Passwords do not match");
+      setError("Passwords do not match");
       return;
     } else if (!comUserName || !comPassword || !comRepeatPassword) {
       console.log(
@@ -195,6 +195,75 @@ const Login = () => {
   const handleRegistrationTwo = () => {
     setRegistrationPage(2);
   };
+
+  const [error, setError] = useState("");
+
+
+  const handlePhoneNumberChange = (e) => {
+    const input = e.target.value;
+
+    setRegPhoneNumber(input);
+
+    if (isValidPhoneNumber(input)) {
+      setError("Phone number must be exactly 10 digits")
+    } else {
+      setError("");
+    }
+
+  }
+
+  const isValidPhoneNumber = (phoneNumber) => {
+    const cleaned = phoneNumber.replace(/\D/g, "");
+    return cleaned.length === 10;
+  }
+
+  const handleEmailChange = (e) => {
+    const input = e.target.value;
+    setRegEmail(input);
+    
+
+    if(!isValidEmail(input)) {
+      setError("Invalid email address")
+    } else {
+      setError("");
+      
+    }
+
+    
+  }
+
+  const isValidEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const handleCompanyPhoneNumberChange = (e) => {
+    const input = e.target.value;
+
+    setComPhoneNumber(input);
+
+    if (isValidPhoneNumber(input)) {
+      setError("Phone number must be exactly 10 digits")
+    } else {
+      setError("");
+    }
+
+  }
+
+  const handleCompanyEmailChange = (e) => {
+    const input = e.target.value;
+    setComEmail(input);
+    
+
+    if(!isValidEmail(input)) {
+      setError("Invalid email address")
+    } else {
+      setError("");
+      
+    }
+
+    
+  }
 
   return (
     <div className="w-[100%] flex items-center justify-center h-[100vh] text-black">
@@ -526,9 +595,9 @@ const Login = () => {
                   </div>
                   <div className="flex  relative flex-col">
                     <input
-                      type="text"
+                      type="email"
                       value={regEmail}
-                      onChange={(e) => setRegEmail(e.target.value)}
+                      onChange={handleEmailChange}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -554,7 +623,7 @@ const Login = () => {
                     <input
                       type="text"
                       value={regPhoneNumber}
-                      onChange={(e) => setRegPhoneNumber(e.target.value)}
+                      onChange={handlePhoneNumberChange}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -605,6 +674,8 @@ const Login = () => {
                         <p>Please fill all the fields</p>
                       </div>
                     )}
+
+                    {error && <p style={{ color: "red" }}>{error}</p>}
                   </div>
                 </div>
               ) : (
@@ -659,7 +730,7 @@ const Login = () => {
 
                   <div className="flex relative flex-col">
                     <input
-                      type="text"
+                      type="password"
                       value={regPassword}
                       onChange={(e) => setRegPassword(e.target.value)}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
@@ -684,7 +755,7 @@ const Login = () => {
                   </div>
                   <div className="flex relative flex-col">
                     <input
-                      type="text"
+                      type="password"
                       value={regRepeatPassword}
                       onChange={(e) => setRegRepeatPassword(e.target.value)}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
@@ -730,6 +801,8 @@ const Login = () => {
                         <p>Please fill all the fields</p>
                       </div>
                     )}
+
+                  {error && <p style={{ color: "red" }}>{error}</p>}
                   </div>
                 </div>
               )}
@@ -978,7 +1051,7 @@ const Login = () => {
                     <input
                       type="text"
                       value={comEmail}
-                      onChange={(e) => setComEmail(e.target.value)}
+                      onChange={handleCompanyEmailChange}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -1030,7 +1103,7 @@ const Login = () => {
                     <input
                       type="text"
                       value={comPhoneNumber}
-                      onChange={(e) => setComPhoneNumber(e.target.value)}
+                      onChange={handleCompanyPhoneNumberChange}
                       className="peer ring-[0.5px] rounded-[5px] py-[5px] px-[10px] focus:outline-none placeholder-transparent"
                       placeholder=" "
                     />
@@ -1081,6 +1154,7 @@ const Login = () => {
                         <p>Please fill all the fields</p>
                       </div>
                     )}
+                    {error && <p style={{ color: "red" }}>{error}</p>}
                   </div>
                 </div>
               ) : (
@@ -1206,6 +1280,7 @@ const Login = () => {
                         <p>Please fill all the fields</p>
                       </div>
                     )}
+                    {error && <p style={{ color: "red" }}>{error}</p>}
                   </div>
                 </div>
               )}
@@ -1218,7 +1293,7 @@ const Login = () => {
           loginClick ? "translate-x-[-294px]" : "right-0"
         } transition-transform z-[200] ease-out duration-500 w-[61.8%] absolute  h-[100%] bg-[#101010] text-white flex ring-[0.5px] ring-gray-500 items-center justify-center`}
       >
-        <Image height={280} src={EcoHarvest} />
+        <Image alt="EcoHarvestLogo" height={280} src={EcoHarvest} />
       </div>
     </div>
   );

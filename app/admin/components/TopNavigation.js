@@ -32,7 +32,7 @@ const TopNavigation = ({ id, isLoggedIn, notifications, userInformation }) => {
           <Image alt="Bell" src={Bell} height={20} />
         </div>
 
-        <div className="absolute hidden group-hover:block bg-gray-300 px-[10px] py-[10px] h-[45vh] top-[38px] left-[0] w-[18vw] ring-gray-500 ring-[0.5px] rounded-[10px]">
+        <div className="absolute hidden z-[9999] group-hover:block bg-gray-300 px-[10px] py-[10px] h-[45vh] top-[38px] left-[0] w-[18vw] ring-gray-500 ring-[0.5px] rounded-[10px]">
           <p className="text-gray-800 text-[20px]">Notifications</p>
           {notifications && notifications.length > 0 ? (
             notifications.map((notification, index) => (

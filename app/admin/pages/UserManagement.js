@@ -16,6 +16,8 @@ export default function UserManagement() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [repeatPassword, setRepeatPassword] = useState('')
+  
 
 
   const [vendorFirstName, setVendorFirstName] = useState('')
@@ -25,10 +27,13 @@ export default function UserManagement() {
   const [vendorBusinessName, setVendorBusinessName] = useState('')
   const [vendorPassword, setVendorPassword] = useState('')
   const [vendorUsername, setVendorUsername] = useState('')
+  const [vendorRepeatPassword, setVendorRepeatPassword] = useState('')
 
   const [vendorRegistrationSuccess, setVendorRegistrationSuccess] = useState(false)
   const [adminRegistrationSuccess, setAdminRegistrationSuccess] = useState(false)
 
+  const [error, setError] = useState('');
+  const [adminError, setAdminError] = useState('')
 
 
 
@@ -52,8 +57,25 @@ export default function UserManagement() {
   
 
   const registerAdmin = async () => {
-    if(!firstName || !lastName || !email || !phoneNumber || !gender || !username || !password) {
-      alert('Please fill all the fields')
+    if(!firstName || !lastName || !email || !phoneNumber || !gender || !username || !password || !repeatPassword) {
+      setAdminError('Please fill all the fields')
+      return
+    }
+
+    if(phoneNumber.length < 10 || phoneNumber.length > 10) {
+      setAdminError('Phone number must be at least 10 digits')
+      return
+    }
+    if(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setAdminError('Invalid email address');
+        return;
+      }
+    }
+
+    if(password !== repeatPassword) {
+      setAdminError('Passwords do not match')
       return
     }
 
@@ -89,10 +111,29 @@ export default function UserManagement() {
 
   const registerVendor = async () => {
     if(!vendorFirstName || !vendorLastName || !vendorEmail || !vendorPhoneNumber || !vendorBusinessName || !vendorUsername || !vendorPassword) {
-      alert('Please fill all the fields')
+      setError('Please fill all the fields')
       return
     }
 
+
+    if(vendorPhoneNumber.length < 10 || vendorPhoneNumber.length > 10) {
+      setError('Phone number must be at least 10 digits')
+      return
+    }
+
+    if(vendorEmail) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(vendorEmail)) {
+        setError('Invalid email address');
+        return;
+      }
+    }
+
+    if(vendorPassword !== vendorRepeatPassword) {
+      setError('Passwords do not match')
+      return
+    }
+    
     console.log(vendorFirstName, vendorLastName, vendorEmail, vendorPhoneNumber, vendorBusinessName, vendorUsername, vendorPassword)
 
     try {
@@ -178,9 +219,18 @@ export default function UserManagement() {
                 </div>
                 <div className="w-[100%]">
                   <p>Password</p>
-                  <input value={vendorPassword} onChange={(e) => setVendorPassword(e.currentTarget.value)} type="text" className="border-[1px] w-[100%] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
+                  <input value={vendorPassword} onChange={(e) => setVendorPassword(e.currentTarget.value)} type="password" className="border-[1px] w-[100%] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
                 </div>
               </div>
+
+              <div className="flex flex-row mt-[15px] space-x-[20px] w-[100%]">
+                <div className="w-[48.5%]">
+                  <p>Repeat password</p>
+                  <input  value={vendorRepeatPassword} onChange={(e) => setVendorRepeatPassword(e.currentTarget.value)} type="password" className="border-[1px]  w-[100%] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
+                </div>
+              </div>
+
+              {error && <p style={{ color: "red" }}>{error}</p>}
               <div className="mt-[15px] bg-yellow-500 flex items-center ring-yellow-800 ring-[0.5px] cursor-pointer justify-center py-[5px] rounded-[5px] " onClick={registerVendor}>
                 <p>Register </p>
               </div>
@@ -256,11 +306,18 @@ export default function UserManagement() {
           </div>
           <div className="mt-[5px]">
             <p className="text-[15px]">Password</p>
-            <input type="text"onChange={(e) => setPassword(e.currentTarget.value)} className="border-[1px] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
+            <input type="password"onChange={(e) => setPassword(e.currentTarget.value)} className="border-[1px] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
+          </div>
+          <div className="mt-[5px]">
+            <p className="text-[15px]">Repeat password</p>
+            <input type="password"onChange={(e) => setRepeatPassword(e.currentTarget.value)} className="border-[1px] outline-none border-gray-400 rounded-[5px] px-[10px] py-[2px] w-[100%]"  />
           </div>
           <div onClick={registerAdmin} className="mt-[15px] bg-yellow-500 flex items-center ring-yellow-800 ring-[0.5px] cursor-pointer justify-center py-[5px] rounded-[5px] ">
             <p>Register</p>
           </div>
+
+          {adminError && <p className="mt-[10px]" style={{ color: "red" }}>{adminError}</p>}
+      
       </div>
       {adminRegistrationSuccess && <div className="absolute bottom-0 left-0  text-black mx-[280px] opacity-[94%] my-[15px] bg-green-500 ring-green-800 ring-[1px] rounded-[5px] px-[20px] py-[15px]">
         <p>Admin registered successfully</p>

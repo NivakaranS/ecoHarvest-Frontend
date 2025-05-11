@@ -76,7 +76,7 @@ export default function Dashboard() {
     <div className="flex">
       <Sidebar />
       <div className="flex-1 p-6 bg-gray-100">
-        <Navbar />
+        <Navbar notifications={notifications} id={id} />
         <div className="grid grid-cols-4 gap-4 mt-6">
           <Card title="Total Sales" value="$12,458" percentage="+12.5%" imageSrc = {sales} />
           <Card title="Food Saved" value="2,345 kg" percentage="+8.1%" imageSrc = {saved} />

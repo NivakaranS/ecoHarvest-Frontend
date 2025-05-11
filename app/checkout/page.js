@@ -1,22 +1,40 @@
-
 "use client";
 
-import Navigation from "../components/Navigation";
 import Footer from "../components/Footer";
 import Max from "../components/Max";
+import Navigation from "../components/Navigation";
+import Product from "../components/Product";
+import Image from "next/image";
+import ProductImage from "../images/product.png";
+import YouMightLike from "../components/YouMightLike";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
 import axios from "axios";
+import EmptyCart from '../images/emptyCart.png'
 
 const CheckoutPage = () => {
+  const [isFixed, setIsFixed] = useState(true);
+  const targetRef = useRef(null);
+  const fixedRef = useRef(null);
+
   const [id, setId] = useState("");
   const [role, setRole] = useState("");
   const [userLoggedIn, setUserLoggedIn] = useState(false);
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState({
+    products: [],
+  });
+
+  const [OrderHistory, setOrderHistory] = useState([]);
+
+
+  const [productsDetail, setProductsDetail] = useState([]);
+  const [quantity, setQuantity] = useState(1);
+  const [updateBtnVisible, setUpdateBtnVisible] = useState(false);
   const [advertisement, setAdvertisement] = useState([]);
 
-  const router = useRouter();
+  const [numberOfCartItems, setNumberOfCartItems] = useState(0);
 
+  const router = useRouter();
 
 
   useEffect(() => {
@@ -33,8 +51,6 @@ const CheckoutPage = () => {
 
 }, [])
 
-
-  
 
   useEffect(() => {
     const fetchCookies = async () => {
@@ -56,12 +72,20 @@ const CheckoutPage = () => {
             const response2 = await axios.get(
               `http://localhost:8000/cart/${response.data.id}`
             );
-            setCart(response2.data);
-            console.log("Cart items fetched successfully:", response2.data);
-
-
-          } catch(errr) {
-            router.push('/');
+            setCart(response2.data.cart);
+            setProductsDetail(response2.data.products);
+            console.log(
+              "Product items fetched successfully:",
+              response2.data.products
+            );
+            console.log(
+              "Cart items fetched successfully:",
+              response2.data.cart
+            );
+          } catch (errr) {
+            console.log("Cart Empty");
+       
+        
           }
         } else if (response.data.role === "Vendor") {
           router.push("/vendor");
@@ -69,27 +93,139 @@ const CheckoutPage = () => {
           router.push("/admin");
         }
       } catch (error) {
-        router.push('/');
+        router.push("/login");
       }
     };
 
     fetchCookies();
   }, []);
 
+  
+
+  const handleCheckout = () => {
+    if (userLoggedIn) {
+      const response = axios.post("http://localhost:8000/orders/checkout", {
+        cart
+      })
+
+      console.log("Checkout response:", response);
+      router.push("/checkout")
+
+    } else {
+      router.push("/login");
+    }
+  }
+
+
+
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (fixedRef.current && targetRef.current) {
+        const fixedHeight = fixedRef.current.clientHeight;
+        const targetTop = targetRef.current.getBoundingClientRect().top;
+
+        setIsFixed(targetTop > fixedHeight);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleIncreaseQuantity = (itemId) => {
+    setCart((prevCart) => ({
+      ...prevCart,
+      products: prevCart.products.map((item) =>
+        item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
+      ),
+    }));
+    setUpdateBtnVisible(true);
+  };
+  
+  const handleDecreaseQuantity = (itemId) => {
+    setCart((prevCart) => ({
+      ...prevCart,
+      products: prevCart.products.map((item) =>
+        item.id === itemId
+          ? { ...item, quantity: Math.max(1, item.quantity - 1) }
+          : item
+      ),
+    }));
+    setUpdateBtnVisible(true);
+  };
+
+
+
+  useEffect(() => {
+    const fetchOrderHistory = async () => {
+      if(!userLoggedIn) {
+        return
+      }
+      try {
+        const response2 = await axios.get(`http://localhost:8000/orders/history/:${id}`);
+                    setOrderHistory(response2.data);
+                    console.log("Order history fetched successfully:", response2.data);
+                    console.log("Length", response2.data.cart.products.length)
+      } catch(errr) {
+        console.log("No order history")
+
+      }
+    }
+
+    fetchOrderHistory();
+
+  }, [id])
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      if(!userLoggedIn) {
+        return
+      }
+      try {
+        console.log("iddd", id)
+        const response2 = await axios.get(`http://localhost:8000/cart/${id}`);
+                    setCart(response2.data.cart);
+                    setProductsDetail(response2.data.products);
+                    console.log("Product items fetched successfully:", response2.data.products);
+                    console.log("Cart items fetched successfully:", response2.data.cart);
+                    setNumberOfCartItems(response2.data.cart.products.length);
+                    console.log("Length", response2.data.cart.products.length)
+      } catch(errr) {
+        console.log("Cart Empty")
+
+      }
+    }
+
+    fetchCart();
+
+  }, [id])
+
   return (
     <div>
-      <Navigation cart={cart} id={id} userLoggedIn={userLoggedIn} />
-      <div className="pt-[15vh] w-[100%] flex items-center justify-center text-black">
-        <div className="w-[95%] h-[100vh] ">
-          <p>This is the checkout</p>
+      <Navigation
+      numberOfCartItems={numberOfCartItems}
+        productsDetail={productsDetail}
+        cart={cart}
+        id={id}
+        userLoggedIn={userLoggedIn}
+      />
+      <div className="min-h-[100vh] pb-[100px] flex items-center justify-center text-black pt-[15vh]">
+        <div className="w-[100%] h-[100vh]  py-[20px] ">
+          <p className="text-[35px] text-center w-[100%]">Payment</p>
+          <div className="w-[100%] h-[100%] flex flex-col items-center justify-center">
+            <div className="flex flex-col bg-gray-300 ring-[0.5px] mt-[20px] ring-gray-700 rounded-[20px] items-center justify-center w-[20vw] h-[100%]">
+
+            </div>
+          </div>
         </div>
       </div>
+     
       <Max />
       <Footer />
     </div>
   );
 };
 
-
 export default CheckoutPage;
-

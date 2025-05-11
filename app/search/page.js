@@ -16,6 +16,12 @@ const SearchPage = () => {
         const categoryName = searchParms.get('category') || '';
         const query = searchParms.get('query') || '';
 
+        const [numberOfCartItems, setNumberOfCartItems] = useState(0);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userInformation, setUserInformation] = useState([]);
+    const [notifications, setNotifications] = useState([]);
+    
+
     const [width, setWidth] = useState(0);
     const selectRef = useRef(null);
     const textRef = useRef(null);
@@ -30,46 +36,54 @@ const SearchPage = () => {
 
   
   useEffect(() => {
+  
     const fetchCookies = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/check-cookie/", {
-          withCredentials: true,
+        const response = await axios.get(
+          "http://localhost:8000/check-cookie/",
+          {
+            withCredentials: true,
+          }
+        );
 
-        });
+        try {
+          console.log('id', response.data.id)
+          const response2 = await axios.get('http://localhost:8000/customers/details/:' + response.data.id)
+          console.log('customer details', response2.data);
+          setUserInformation(response2.data);
+
+          try {
+            const response3 = await axios.get('http://localhost:8000/notification/:' + response.data.id)
+            console.log('notifications', response3.data);
+            setNotifications(response3.data);
+          } catch(err) {
+            console.error("Error in fetching notifications: ", err)
+          }
+        } catch(err) {
+          console.error("Error in fetching user information: ", err)
+        }
         
-        console.log(response.data);
+
         setId(response.data.id);
         setRole(response.data.role);
+        setIsLoggedIn(true);
+        setUserLoggedIn(true);
 
-        if(response.data.role === 'Customer') {
-          setUserLoggedIn(true)
-          try {
-            const response2 = await axios.get(`http://localhost:8000/cart/${response.data.id}`);
-            setCart(response2.data);
-            console.log("Cart items fetched successfully:", response2.data);
-
-          } catch(errr) {
-            console.error("Error fetching cart items:", errr);
-          }
-          
-
-        }
-        else if(response.data.role === 'Vendor') {
-          
-          router.push('/vendor');
-        }
-        else if(response.data.role === 'Admin') {
-
-          router.push('/admin');
-        }
-
+        if (response.data.role === "Customer") setIsLoggedIn(true);
+        
       } catch (error) {
-        setUserLoggedIn(false);
+
+        setIsLoggedIn(false);
+        console.log("Error fetching cookies:", error);
+        
+
       }
-    }
+    };
 
     fetchCookies();
+
   }, [])
+
 
 
     const updateWidth = () => {
@@ -115,7 +129,7 @@ const SearchPage = () => {
 
     return (
         <div>
-            <Navigation cart={cart} id={id} userLoggedIn={userLoggedIn}/>
+            <Navigation cart={cart} numberOfCartItems={numberOfCartItems} id={id} userLoggedIn={userLoggedIn}/>
             <div className="pt-[15vh] w-[100%] flex items-center justify-center text-black">
                 <div className="w-[95%] h-[100%] flex flex-row py-[15px] ">
                     <div className="w-[16%]   h-[100%]">
@@ -233,14 +247,21 @@ const SearchPage = () => {
                         <p className="text-[30px]">Search results for "{query}"</p>
                         <div className="w-[100%]  px-[5px] mx-[10px] flex items-center justify-center">
                             <div className="grid w-[100%]   gap-[5px] grid-cols-5">
-                            {
+                            {searchProducts.length > 0 && (
                                     searchProducts.map((product, index) => (
                                         <div key={index}>
                                             
                                             <Product id={product._id} title={product.name} imageUrl={product.imageUrl} subtitle={product.subtitle} unitPrice={product.unitPrice}  />
                                         </div>
-                                    ))
+                                    )))
                                 }
+
+                                {searchProducts.length === 0 && (
+                                    <div className="flex flex-col mt-[20px]  justify-center">
+                                        <p>No products found</p>
+                                        <p>Try a different keyword:)</p>
+                                    </div>
+                                )}
 
                             </div>
                         </div>
